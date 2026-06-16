@@ -10,7 +10,8 @@ export default defineConfig({
     include: ["__tests__/**/*.test.{ts,tsx}"],
     coverage: {
       provider: "v8",
-      include: ["lib/**/*.ts", "app/**/*.{ts,tsx}"],
+      reporter: ["text", "json-summary"],
+      include: ["lib/**/*.ts", "app/**/*.{ts,tsx}", "middleware.ts"],
       exclude: ["**/*.d.ts", "**/*.test.*"],
     },
   },
