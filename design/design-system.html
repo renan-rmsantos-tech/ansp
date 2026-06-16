@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design System — Arca Nossa Senhora da Providência</title>
+<style>
+:root {
+  --bg:      oklch(97.5% 0.005 85);
+  --surface: oklch(100% 0 0);
+  --fg:      oklch(22% 0.06 250);
+  --muted:   oklch(48% 0.03 250);
+  --border:  oklch(90% 0.008 85);
+  --accent:  oklch(25% 0.06 250);
+  --gold:    oklch(72% 0.10 80);
+  --cream:   oklch(92% 0.03 85);
+  --success: oklch(52% 0.14 155);
+  --warn:    oklch(68% 0.14 70);
+  --danger:  oklch(52% 0.16 25);
+
+  --font-display: 'Iowan Old Style', 'Charter', 'Palatino', Georgia, serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --radius: 8px;
+  --radius-sm: 4px;
+  --radius-lg: 12px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font: 16px/1.55 var(--font-body);
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 64px 24px 120px;
+}
+
+/* ── Section rhythm ── */
+.ds-section {
+  margin-bottom: 80px;
+}
+.ds-section-title {
+  font: 600 11px/1 var(--font-body);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 32px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Hero / brand header ── */
+.brand-hero {
+  text-align: center;
+  padding: 80px 0 64px;
+  margin-bottom: 80px;
+  border-bottom: 1px solid var(--border);
+}
+.brand-hero .logo-mark {
+  margin: 0 auto 32px;
+}
+.brand-hero h1 {
+  font: 600 36px/1.15 var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.brand-hero .subtitle {
+  font: 450 15px/1.5 var(--font-body);
+  color: var(--muted);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── Logo variations ── */
+.logo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+.logo-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 48px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background: var(--surface);
+}
+.logo-card.dark {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.logo-card .logo-label {
+  font: 550 12px/1 var(--font-body);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.logo-card.dark .logo-label {
+  color: oklch(80% 0.02 250);
+}
+
+/* ── Color palette ── */
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+.color-chip {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.color-chip .swatch {
+  height: 80px;
+}
+.color-chip .meta {
+  padding: 12px 14px;
+}
+.color-chip .meta .name {
+  font: 550 13px/1 var(--font-body);
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+.color-chip .meta .value {
+  font: 400 11px/1.4 var(--font-mono);
+  color: var(--muted);
+}
+
+/* ── Typography ── */
+.type-specimen {
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+.type-specimen:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+.type-specimen .label {
+  font: 550 11px/1 var(--font-body);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.type-specimen .sample-display {
+  font: 600 48px/1.1 var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+.type-specimen .sample-h1 {
+  font: 600 36px/1.15 var(--font-display);
+  letter-spacing: -0.01em;
+}
+.type-specimen .sample-h2 {
+  font: 600 28px/1.2 var(--font-display);
+  letter-spacing: -0.01em;
+}
+.type-specimen .sample-h3 {
+  font: 600 22px/1.25 var(--font-display);
+}
+.type-specimen .sample-body {
+  font: 400 16px/1.55 var(--font-body);
+  max-width: 65ch;
+}
+.type-specimen .sample-small {
+  font: 450 13px/1.5 var(--font-body);
+  letter-spacing: 0.01em;
+  color: var(--muted);
+}
+.type-specimen .sample-caption {
+  font: 550 11px/1 var(--font-body);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.type-specimen .sample-mono {
+  font: 400 14px/1.5 var(--font-mono);
+  color: var(--muted);
+}
+.type-meta {
+  margin-top: 6px;
+  font: 400 12px/1.4 var(--font-mono);
+  color: var(--muted);
+}
+
+/* ── Spacing scale ── */
+.spacing-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.spacing-bar {
+  height: 24px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+.spacing-label {
+  font: 550 12px/1 var(--font-mono);
+  color: var(--muted);
+  min-width: 60px;
+}
+.spacing-value {
+  font: 400 12px/1 var(--font-mono);
+  color: var(--muted);
+}
+
+/* ── Components ── */
+.component-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.component-label {
+  width: 100%;
+  font: 550 12px/1 var(--font-body);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 24px;
+  font: 550 14px/1 var(--font-body);
+  letter-spacing: 0.02em;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+.btn-primary:hover { filter: none; }
+.btn-gold:hover { filter: none; }
+.btn-danger:hover { filter: none; }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: oklch(20% 0.06 250); }
+.btn-gold {
+  background: var(--gold);
+  color: var(--accent);
+}
+.btn-gold:hover { background: oklch(68% 0.10 80); }
+.btn-outline {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+.btn-outline:hover { background: oklch(96% 0.02 250); }
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+}
+.btn-ghost:hover { background: var(--cream); color: var(--fg); }
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+.btn-danger:hover { background: oklch(48% 0.16 25); }
+.btn-sm { padding: 7px 14px; font-size: 13px; }
+.btn-lg { padding: 14px 32px; font-size: 15px; }
+.btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+.btn-loading { opacity: 0.7; }
+.btn-loading .spinner { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Inputs */
+.input-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 360px;
+}
+.input-demo label {
+  font: 550 13px/1 var(--font-body);
+  letter-spacing: 0.02em;
+}
+.input-demo input,
+.input-demo textarea,
+.input-demo select {
+  width: 100%;
+  padding: 11px 14px;
+  font: 400 15px/1.5 var(--font-body);
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.input-demo input:focus,
+.input-demo textarea:focus,
+.input-demo select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px oklch(94% 0.02 250);
+}
+.input-demo .input-error {
+  border-color: var(--danger);
+}
+.input-demo .input-error:focus {
+  box-shadow: 0 0 0 3px oklch(92% 0.04 25);
+}
+.input-demo .hint {
+  font: 400 12px/1.4 var(--font-body);
+  color: var(--muted);
+}
+.input-demo .error-text {
+  font: 450 12px/1.4 var(--font-body);
+  color: var(--danger);
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.card-title {
+  font: 600 18px/1.3 var(--font-display);
+  margin-bottom: 6px;
+}
+.card-text {
+  font: 400 14px/1.55 var(--font-body);
+  color: var(--muted);
+}
+
+/* Badges / pills */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font: 550 11px/1 var(--font-body);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 999px;
+}
+.badge-navy { background: var(--accent); color: #fff; }
+.badge-gold { background: var(--gold); color: var(--accent); }
+.badge-success { background: oklch(94% 0.04 155); color: oklch(38% 0.12 155); }
+.badge-warn { background: oklch(94% 0.04 70); color: oklch(48% 0.12 70); }
+.badge-danger { background: oklch(94% 0.04 25); color: oklch(42% 0.14 25); }
+.badge-muted { background: var(--cream); color: var(--muted); }
+
+/* Divider */
+.gold-divider {
+  width: 48px;
+  height: 2px;
+  background: var(--gold);
+  border: none;
+  margin: 24px 0;
+}
+
+/* ── Responsive ── */
+/* ── Skip link ── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  padding: 8px 16px;
+  font: 550 13px/1 var(--font-body);
+  background: var(--accent);
+  color: #fff;
+  border-radius: 0 0 6px 6px;
+  z-index: 100;
+  text-decoration: none;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  body { padding: 48px 20px 96px; }
+}
+@media (max-width: 640px) {
+  body { padding: 32px 16px 80px; }
+  .brand-hero { padding: 48px 0 40px; }
+  .brand-hero h1 { font-size: 28px; }
+  .logo-grid { grid-template-columns: 1fr; }
+  .palette-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .spacing-bar { max-width: 60vw; }
+  .spacing-row { flex-wrap: wrap; gap: 8px; }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ── Print ── */
+@media print {
+  body { padding: 24px; max-width: 100%; }
+  .skip-link { display: none; }
+  .btn { border: 1px solid var(--border); }
+  .logo-card.dark { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .color-chip .swatch { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Pular para o conteúdo</a>
+
+<!-- ══════════════════════════════════════════════
+     BRAND HERO
+     ══════════════════════════════════════════════ -->
+<header class="brand-hero">
+  <svg class="logo-mark" width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-label="Logo da Arca Nossa Senhora da Providência — pintura clássica em moldura circular navy com texto dourado" style="margin: 0 auto 32px; display: block;">
+    <defs>
+      <clipPath id="h-clip"><circle cx="110" cy="110" r="84"/></clipPath>
+      <radialGradient id="h-navy" cx="50%" cy="45%" r="55%">
+        <stop offset="0%" stop-color="#1e2a4a"/><stop offset="100%" stop-color="#0f1729"/>
+      </radialGradient>
+    </defs>
+    <circle cx="110" cy="110" r="106" fill="url(#h-navy)" stroke="#c9a84c" stroke-width="3"/>
+    <circle cx="110" cy="110" r="98" fill="none" stroke="#c9a84c" stroke-width="0.6" opacity="0.35"/>
+    <image href="base1.png" x="22" y="30" width="176" height="184" clip-path="url(#h-clip)" preserveAspectRatio="xMidYMid slice"/>
+    <circle cx="110" cy="110" r="84" fill="none" stroke="#0f1729" stroke-width="12" opacity="0.2"/>
+    <path id="h-arc-top" d="M 18,110 a 92,92 0 0,1 184,0" fill="none"/>
+    <text fill="#c9a84c" font-family="'Iowan Old Style','Charter','Palatino',Georgia,serif" font-size="12.5" font-weight="700" letter-spacing="0.18em">
+      <textPath href="#h-arc-top" startOffset="50%" text-anchor="middle">ARCA</textPath>
+    </text>
+    <path id="h-arc-bottom" d="M 20,118 a 90,90 0 0,0 180,0" fill="none"/>
+    <text fill="#c9a84c" font-family="'Iowan Old Style','Charter','Palatino',Georgia,serif" font-size="11" font-weight="700" letter-spacing="0.14em">
+      <textPath href="#h-arc-bottom" startOffset="50%" text-anchor="middle">N. S. DA PROVIDÊNCIA</textPath>
+    </text>
+  </svg>
+  <h1>Arca Nossa Senhora<br>da Providência</h1>
+  <p class="subtitle">Design System — identidade visual, paleta de cores, tipografia e componentes base para todos os materiais da Arca.</p>
+</header>
+
+<main id="main-content">
+<!-- ══════════════════════════════════════════════
+     1. LOGO
+     ══════════════════════════════════════════════ -->
+<section class="ds-section" aria-labelledby="sec-logo">
+  <h2 class="ds-section-title" id="sec-logo">01 — Logo</h2>
+  <div class="logo-grid">
+    <!-- Light bg — full color with painting -->
+    <div class="logo-card">
+      <svg width="130" height="130" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-label="Logo Arca — fundo claro">
+        <defs><clipPath id="lt-clip"><circle cx="110" cy="110" r="84"/></clipPath><radialGradient id="lt-bg" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="#1e2a4a"/><stop offset="100%" stop-color="#0f1729"/></radialGradient></defs>
+        <circle cx="110" cy="110" r="106" fill="url(#lt-bg)" stroke="#c9a84c" stroke-width="3"/>
+        <circle cx="110" cy="110" r="98" fill="none" stroke="#c9a84c" stroke-width="0.6" opacity="0.35"/>
+        <image href="base1.png" x="22" y="30" width="176" height="184" clip-path="url(#lt-clip)" preserveAspectRatio="xMidYMid slice"/>
+        <circle cx="110" cy="110" r="84" fill="none" stroke="#0f1729" stroke-width="12" opacity="0.2"/>
+        <path id="lt-arc-top" d="M 18,110 a 92,92 0 0,1 184,0" fill="none"/>
+        <text fill="#c9a84c" font-family="'Iowan Old Style','Charter','Palatino',Georgia,serif" font-size="12.5" font-weight="700" letter-spacing="0.18em"><textPath href="#lt-arc-top" startOffset="50%" text-anchor="middle">ARCA</textPath></text>
+        <path id="lt-arc-bottom" d="M 20,118 a 90,90 0 0,0 180,0" fill="none"/>
+        <text fill="#c9a84c" font-family="'Iowan Old Style','Charter','Palatino',Georgia,serif" font-size="11" font-weight="700" letter-spacing="0.14em"><textPath href="#lt-arc-bottom" startOffset="50%" text-anchor="middle">N. S. DA PROVIDÊNCIA</textPath></text>
+      </svg>
+      <span class="logo-label">Fundo claro</span>
+    </div>
+
+    <!-- Dark bg -->
+    <div class="logo-card dark">
+      <svg width="130" height="130" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-label="Logo Arca — fundo escuro">
+        <defs><clipPath id="dk-clip"><circle cx="110" cy="110" r="84"/></clipPath><radialGradient id="dk-bg" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="#1e2a4a"/><stop offset="100%" stop-color="#0f1729"/></radialGradient></defs>
+        <circle cx="110" cy="110" r="106" fill="url(#dk-bg)" stroke="#c9a84c" stroke-width="3"/>
+        <circle cx="110" cy="110" r="98" fill="none" stroke="#c9a84c" stroke-width="0.6" opacity="0.35"/>
+        <image href="base1.png" x="22" y="30" width="176" height="184" clip-path="url(#dk-clip)" preserveAspectRatio="xMidYMid slice"/>
+        <circle cx="110" cy="110" r="84" fill="none" stroke="#0f1729" stroke-width="12" opacity="0.2"/>
+        <path id="dk-arc-top" d="M 18,110 a 92,92 0 0,1 184,0" fill="none"/>
+        <text fill="#c9a84c" font-family="'Iowan Old Style','Charter','Palatino',Georgia,serif" font-size="12.5" font-weight="700" letter-spacing="0.18em"><textPath href="#dk-arc-top" startOffset="50%" text-anchor="middle">ARCA</textPath></text>
+        <path id="dk-arc-bottom" d="M 20,118 a 90,90 0 0,0 180,0" fill="none"/>
+        <text fill="#c9a84c" font-family="'Iowan Old Style','Charter','Palatino',Georgia,serif" font-size="11" font-weight="700" letter-spacing="0.14em"><textPath href="#dk-arc-bottom" startOffset="50%" text-anchor="middle">N. S. DA PROVIDÊNCIA</textPath></text>
+      </svg>
+      <span class="logo-label">Fundo escuro</span>
+    </div>
+
+    <!-- Grayscale / monochrome -->
+    <div class="logo-card" style="background: var(--bg);">
+      <svg width="130" height="130" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-label="Logo Arca — monocromático">
+        <defs>
+          <clipPath id="gs-clip"><circle cx="110" cy="110" r="84"/></clipPath>
+          <filter id="gs-filter"><feColorMatrix type="saturate" values="0"/></filter>
+        </defs>
+        <circle cx="110" cy="110" r="106" fill="#1a1a2e" stroke="#888" stroke-width="3"/>
+        <circle cx="110" cy="110" r="98" fill="none" stroke="#888" stroke-width="0.6" opacity="0.35"/>
+        <image href="base1.png" x="22" y="30" width="176" height="184" clip-path="url(#gs-clip)" preserveAspectRatio="xMidYMid slice" filter="url(#gs-filter)"/>
+        <circle cx="110" cy="110" r="84" fill="none" stroke="#1a1a2e" stroke-width="12" opacity="0.2"/>
+        <path id="gs-arc-top" d="M 18,110 a 92,92 0 0,1 184,0" fill="none"/>
+        <text fill="#aaa" font-family="'Iowan Old Style','Charter','Palatino',Georgia,serif" font-size="12.5" font-weight="700" letter-spacing="0.18em"><textPath href="#gs-arc-top" startOffset="50%" text-anchor="middle">ARCA</textPath></text>
+        <path id="gs-arc-bottom" d="M 20,118 a 90,90 0 0,0 180,0" fill="none"/>
+        <text fill="#aaa" font-family="'Iowan Old Style','Charter','Palatino',Georgia,serif" font-size="11" font-weight="700" letter-spacing="0.14em"><textPath href="#gs-arc-bottom" startOffset="50%" text-anchor="middle">N. S. DA PROVIDÊNCIA</textPath></text>
+      </svg>
+      <span class="logo-label">Monocromático</span>
+    </div>
+  </div>
+
+  <div style="margin-top: 32px; padding: 24px; background: var(--cream); border-radius: var(--radius);">
+    <p style="font: 550 13px/1 var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px;">Elementos do logo</p>
+    <p style="font: 400 14px/1.6 var(--font-body); color: var(--fg); max-width: 65ch;">
+      <strong>Figura central:</strong> Pintura clássica de Nossa Senhora da Providência com o Menino Jesus (estilo Murillo), centralizada sobre fundo navy com radialGradient.
+      <strong>Moldura circular navy:</strong> Anel em azul-marinho profundo com borda dourada e anel interno decorativo, remetendo a medalhões e camafeus sacros.
+      <strong>Tipografia em arco:</strong> Serifada em dourado, bold, com espaçamento generoso — "ARCA" no arco superior e "N. S. DA PROVIDÊNCIA" no inferior, posicionados com margem confortável da borda.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     2. CORES
+     ══════════════════════════════════════════════ -->
+<section class="ds-section" aria-labelledby="sec-cores">
+  <h2 class="ds-section-title" id="sec-cores">02 — Paleta de cores</h2>
+
+  <p style="font: 550 12px/1 var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px;">Base</p>
+  <div class="palette-grid" style="margin-bottom: 32px;">
+    <div class="color-chip">
+      <div class="swatch" style="background: var(--bg);"></div>
+      <div class="meta"><div class="name">Background</div><div class="value">--bg<br>oklch(97.5% 0.005 85)</div></div>
+    </div>
+    <div class="color-chip">
+      <div class="swatch" style="background: var(--surface);"></div>
+      <div class="meta"><div class="name">Surface</div><div class="value">--surface<br>oklch(100% 0 0)</div></div>
+    </div>
+    <div class="color-chip">
+      <div class="swatch" style="background: var(--fg);"></div>
+      <div class="meta"><div class="name" style="color: var(--fg);">Foreground</div><div class="value">--fg<br>oklch(22% 0.06 250)</div></div>
+    </div>
+    <div class="color-chip">
+      <div class="swatch" style="background: var(--muted);"></div>
+      <div class="meta"><div class="name">Muted</div><div class="value">--muted<br>oklch(48% 0.03 250)</div></div>
+    </div>
+    <div class="color-chip">
+      <div class="swatch" style="background: var(--border); border: 1px solid oklch(85% 0.008 85);"></div>
+      <div class="meta"><div class="name">Border</div><div class="value">--border<br>oklch(90% 0.008 85)</div></div>
+    </div>
+    <div class="color-chip">
+      <div class="swatch" style="background: var(--cream);"></div>
+      <div class="meta"><div class="name">Cream</div><div class="value">--cream<br>oklch(92% 0.03 85)</div></div>
+    </div>
+  </div>
+
+  <p style="font: 550 12px/1 var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px;">Marca</p>
+  <div class="palette-grid" style="margin-bottom: 32px;">
+    <div class="color-chip">
+      <div class="swatch" style="background: var(--accent);"></div>
+      <div class="meta"><div class="name">Navy (accent)</div><div class="value">--accent<br>oklch(25% 0.06 250)</div></div>
+    </div>
+    <div class="color-chip">
+      <div class="swatch" style="background: var(--gold);"></div>
+      <div class="meta"><div class="name">Gold</div><div class="value">--gold<br>oklch(72% 0.10 80)</div></div>
+    </div>
+  </div>
+
+  <p style="font: 550 12px/1 var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px;">Semânticas</p>
+  <div class="palette-grid">
+    <div class="color-chip">
+      <div class="swatch" style="background: var(--success);"></div>
+      <div class="meta"><div class="name">Success</div><div class="value">--success<br>oklch(52% 0.14 155)</div></div>
+    </div>
+    <div class="color-chip">
+      <div class="swatch" style="background: var(--warn);"></div>
+      <div class="meta"><div class="name">Warning</div><div class="value">--warn<br>oklch(68% 0.14 70)</div></div>
+    </div>
+    <div class="color-chip">
+      <div class="swatch" style="background: var(--danger);"></div>
+      <div class="meta"><div class="name">Danger</div><div class="value">--danger<br>oklch(52% 0.16 25)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     3. TIPOGRAFIA
+     ══════════════════════════════════════════════ -->
+<section class="ds-section" aria-labelledby="sec-tipo">
+  <h2 class="ds-section-title" id="sec-tipo">03 — Tipografia</h2>
+
+  <div class="type-specimen">
+    <div class="label">Display — 48px / 600</div>
+    <div class="sample-display">Providência e Fé</div>
+    <div class="type-meta">font: 600 48px/1.1 var(--font-display) · letter-spacing: -0.02em</div>
+  </div>
+
+  <div class="type-specimen">
+    <div class="label">Heading 1 — 36px / 600</div>
+    <div class="sample-h1">Solicitação de Bolsa de Estudos</div>
+    <div class="type-meta">font: 600 36px/1.15 var(--font-display) · letter-spacing: -0.01em</div>
+  </div>
+
+  <div class="type-specimen">
+    <div class="label">Heading 2 — 28px / 600</div>
+    <div class="sample-h2">Dados do Responsável</div>
+    <div class="type-meta">font: 600 28px/1.2 var(--font-display) · letter-spacing: -0.01em</div>
+  </div>
+
+  <div class="type-specimen">
+    <div class="label">Heading 3 — 22px / 600</div>
+    <div class="sample-h3">Informações Financeiras</div>
+    <div class="type-meta">font: 600 22px/1.25 var(--font-display)</div>
+  </div>
+
+  <div class="type-specimen">
+    <div class="label">Body — 16px / 400</div>
+    <div class="sample-body">A Arca Nossa Senhora da Providência oferece bolsas de estudo parciais para famílias que comprovem necessidade financeira, conforme critérios socioeconômicos estabelecidos pela diretoria de cada escola mantida.</div>
+    <div class="type-meta">font: 400 16px/1.55 var(--font-body) · max-width: 65ch</div>
+  </div>
+
+  <div class="type-specimen">
+    <div class="label">Small — 13px / 450</div>
+    <div class="sample-small">Documentação sujeita a análise pela comissão avaliadora. Prazo de resposta: 15 dias úteis.</div>
+    <div class="type-meta">font: 450 13px/1.5 var(--font-body) · letter-spacing: 0.01em</div>
+  </div>
+
+  <div class="type-specimen">
+    <div class="label">Caption / Label — 11px / 550 / uppercase</div>
+    <div class="sample-caption">Status da Solicitação</div>
+    <div class="type-meta">font: 550 11px/1 var(--font-body) · letter-spacing: 0.06em · text-transform: uppercase</div>
+  </div>
+
+  <div class="type-specimen">
+    <div class="label">Mono — 14px / 400</div>
+    <div class="sample-mono">ID: 2024-0847 · CPF: •••.•••.123-45</div>
+    <div class="type-meta">font: 400 14px/1.5 var(--font-mono)</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     4. ESPAÇAMENTO
+     ══════════════════════════════════════════════ -->
+<section class="ds-section" aria-labelledby="sec-espacamento">
+  <h2 class="ds-section-title" id="sec-espacamento">04 — Escala de espaçamento</h2>
+
+  <div class="spacing-row"><span class="spacing-label">4px</span><div class="spacing-bar" style="width: 16px;"></div><span class="spacing-value">Micro — entre ícone e label</span></div>
+  <div class="spacing-row"><span class="spacing-label">8px</span><div class="spacing-bar" style="width: 32px;"></div><span class="spacing-value">Tight — dentro de componentes</span></div>
+  <div class="spacing-row"><span class="spacing-label">12px</span><div class="spacing-bar" style="width: 48px;"></div><span class="spacing-value">Compact — entre elementos relacionados</span></div>
+  <div class="spacing-row"><span class="spacing-label">16px</span><div class="spacing-bar" style="width: 64px;"></div><span class="spacing-value">Default — gap padrão de grid</span></div>
+  <div class="spacing-row"><span class="spacing-label">24px</span><div class="spacing-bar" style="width: 96px;"></div><span class="spacing-value">Comfortable — padding de cards</span></div>
+  <div class="spacing-row"><span class="spacing-label">32px</span><div class="spacing-bar" style="width: 128px;"></div><span class="spacing-value">Spacious — entre seções internas</span></div>
+  <div class="spacing-row"><span class="spacing-label">48px</span><div class="spacing-bar" style="width: 192px;"></div><span class="spacing-value">Section — entre blocos maiores</span></div>
+  <div class="spacing-row"><span class="spacing-label">64px</span><div class="spacing-bar" style="width: 256px;"></div><span class="spacing-value">Region — entre seções de página</span></div>
+  <div class="spacing-row"><span class="spacing-label">80px</span><div class="spacing-bar" style="width: 320px;"></div><span class="spacing-value">Landmark — entre grandes áreas</span></div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     5. COMPONENTES
+     ══════════════════════════════════════════════ -->
+<section class="ds-section" aria-labelledby="sec-componentes">
+  <h2 class="ds-section-title" id="sec-componentes">05 — Componentes</h2>
+
+  <!-- Buttons -->
+  <div style="margin-bottom: 48px;">
+    <div class="component-label">Botões</div>
+    <div class="component-row">
+      <button class="btn btn-primary">Primário</button>
+      <button class="btn btn-gold">Dourado</button>
+      <button class="btn btn-outline">Outline</button>
+      <button class="btn btn-ghost">Ghost</button>
+      <button class="btn btn-danger">Perigo</button>
+    </div>
+    <div class="component-label">Tamanhos</div>
+    <div class="component-row">
+      <button class="btn btn-primary btn-sm">Pequeno</button>
+      <button class="btn btn-primary">Padrão</button>
+      <button class="btn btn-primary btn-lg">Grande</button>
+    </div>
+    <div class="component-label">Estados</div>
+    <div class="component-row">
+      <button class="btn btn-primary">Normal</button>
+      <button class="btn btn-primary" disabled>Desabilitado</button>
+      <button class="btn btn-primary btn-loading" disabled aria-busy="true">
+        <svg class="spinner" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="28" stroke-dashoffset="8" stroke-linecap="round"/></svg>
+        Enviando…
+      </button>
+    </div>
+  </div>
+
+  <!-- Badges -->
+  <div style="margin-bottom: 48px;">
+    <div class="component-label">Badges / Status</div>
+    <div class="component-row">
+      <span class="badge badge-navy">Navy</span>
+      <span class="badge badge-gold">Gold</span>
+      <span class="badge badge-success">Aprovada</span>
+      <span class="badge badge-warn">Pendente</span>
+      <span class="badge badge-danger">Rejeitada</span>
+      <span class="badge badge-muted">Inativa</span>
+    </div>
+  </div>
+
+  <!-- Inputs -->
+  <div style="margin-bottom: 48px;">
+    <div class="component-label">Campos de formulário</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+      <div class="input-demo">
+        <label for="ds-nome">Nome completo</label>
+        <input id="ds-nome" type="text" placeholder="Maria da Silva Santos" aria-describedby="ds-nome-hint" autocomplete="name">
+        <span class="hint" id="ds-nome-hint">Como consta no documento de identidade</span>
+      </div>
+      <div class="input-demo">
+        <label for="ds-email">E-mail</label>
+        <input id="ds-email" type="email" value="email-invalido" class="input-error" aria-invalid="true" aria-describedby="ds-email-error" autocomplete="email">
+        <span class="error-text" id="ds-email-error" role="alert">Formato de e-mail inválido</span>
+      </div>
+      <div class="input-demo">
+        <label for="ds-serie">Série desejada</label>
+        <select id="ds-serie">
+          <option value="">Selecione a série</option>
+          <option>1º Ano — Ensino Fundamental</option>
+          <option>2º Ano — Ensino Fundamental</option>
+          <option>3º Ano — Ensino Fundamental</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div style="margin-bottom: 48px;">
+    <div class="component-label">Cards</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+      <div class="card">
+        <div class="card-title">Família Silva</div>
+        <hr class="gold-divider">
+        <div class="card-text">2 alunos matriculados · Solicitação de 50% de desconto · Renda familiar: R$ 3.200,00</div>
+        <div style="margin-top: 16px; display: flex; gap: 8px;">
+          <span class="badge badge-warn">Pendente</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Família Ferreira</div>
+        <hr class="gold-divider">
+        <div class="card-text">1 aluno matriculado · Bolsa concedida: 40% · Aprovada em 02/06/2024</div>
+        <div style="margin-top: 16px; display: flex; gap: 8px;">
+          <span class="badge badge-success">Aprovada</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Família Souza</div>
+        <hr class="gold-divider">
+        <div class="card-text">1 aluno matriculado · Solicitação de 70% de desconto · Documentação incompleta</div>
+        <div style="margin-top: 16px; display: flex; gap: 8px;">
+          <span class="badge badge-danger">Rejeitada</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dividers -->
+  <div style="margin-bottom: 48px;">
+    <div class="component-label">Divisores</div>
+    <div style="padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);">
+      <p style="font: 550 13px/1 var(--font-body); letter-spacing: 0.02em; margin-bottom: 8px;">Divisor gold — marca registrada da Arca</p>
+      <hr class="gold-divider">
+      <p style="font: 400 14px/1.5 var(--font-body); color: var(--muted); margin-top: 8px;">Usado entre título e conteúdo, ou para separar seções dentro de cards.</p>
+      <hr style="border: none; border-top: 1px solid var(--border); margin: 24px 0;">
+      <p style="font: 550 13px/1 var(--font-body); letter-spacing: 0.02em; margin-bottom: 8px;">Divisor padrão — 1px border</p>
+      <p style="font: 400 14px/1.5 var(--font-body); color: var(--muted); margin-top: 8px;">Usado para separações neutras e de menor hierarquia.</p>
+    </div>
+  </div>
+
+  <!-- Radii -->
+  <div>
+    <div class="component-label">Border radius</div>
+    <div class="component-row">
+      <div style="width: 64px; height: 64px; background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius-sm); display: grid; place-items: center;">
+        <span style="font: 550 11px/1 var(--font-mono); color: var(--muted);">4px</span>
+      </div>
+      <div style="width: 64px; height: 64px; background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius); display: grid; place-items: center;">
+        <span style="font: 550 11px/1 var(--font-mono); color: var(--muted);">8px</span>
+      </div>
+      <div style="width: 64px; height: 64px; background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius-lg); display: grid; place-items: center;">
+        <span style="font: 550 11px/1 var(--font-mono); color: var(--muted);">12px</span>
+      </div>
+      <div style="width: 64px; height: 64px; background: var(--cream); border: 1px solid var(--border); border-radius: 999px; display: grid; place-items: center;">
+        <span style="font: 550 11px/1 var(--font-mono); color: var(--muted);">pill</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     6. APLICAÇÕES
+     ══════════════════════════════════════════════ -->
+<section class="ds-section" aria-labelledby="sec-aplicacoes">
+  <h2 class="ds-section-title" id="sec-aplicacoes">06 — Aplicações do logo</h2>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+    <!-- Header institucional -->
+    <div style="background: var(--accent); border-radius: var(--radius); padding: 32px; display: flex; align-items: center; gap: 20px;">
+      <img src="base1.png" alt="Logo Arca N. S. da Providência" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid oklch(72% 0.10 80); flex-shrink: 0;">
+      <div>
+        <div style="font: 600 16px/1.2 var(--font-display); color: oklch(92% 0.03 85);">Arca Nossa Senhora<br>da Providência</div>
+        <div style="font: 400 12px/1.4 var(--font-body); color: oklch(70% 0.02 250); margin-top: 4px; letter-spacing: 0.06em; text-transform: uppercase;">Escolas Mantidas · FSSPX</div>
+      </div>
+    </div>
+
+    <!-- Cabeçalho de documento -->
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; text-align: center;">
+      <img src="base1.png" alt="Logo Arca N. S. da Providência" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid oklch(72% 0.10 80); margin: 0 auto 12px; display: block;">
+      <div style="font: 550 11px/1 var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px;">Arca Nossa Senhora da Providência</div>
+      <div style="font: 600 20px/1.2 var(--font-display); color: var(--accent);">Solicitação de Bolsa de Estudos</div>
+      <hr class="gold-divider" style="margin: 16px auto;">
+      <div style="font: 400 13px/1.5 var(--font-body); color: var(--muted);">Ano Letivo 2026 · Arca N. S. da Providência</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     7. REGRAS DE USO
+     ══════════════════════════════════════════════ -->
+<section class="ds-section" style="margin-bottom: 0;" aria-labelledby="sec-regras">
+  <h2 class="ds-section-title" id="sec-regras">07 — Regras de uso</h2>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+    <div class="card">
+      <div class="card-title" style="font-size: 16px;">Área de respiro do logo</div>
+      <div class="card-text" style="margin-top: 8px;">Manter margem mínima de 50% do diâmetro do logo ao redor. Nunca distorcer, rotacionar ou alterar as cores fora das variações documentadas.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="font-size: 16px;">Uso do dourado</div>
+      <div class="card-text" style="margin-top: 8px;">O ouro (<code style="font-family: var(--font-mono); font-size: 12px;">--gold</code>) é usado com parcimônia: divisores, acentos em CTAs primários e no logo. Máximo 2 usos por tela.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="font-size: 16px;">Tipografia</div>
+      <div class="card-text" style="margin-top: 8px;">Serifada para títulos e headlines (gravitas institucional). Sans-serif para corpo e UI (legibilidade). ALL CAPS sempre com letter-spacing ≥ 0.06em.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="font-size: 16px;">Tom visual</div>
+      <div class="card-text" style="margin-top: 8px;">Institucional e acolhedor. Sem sombras agressivas — usar bordas e whitespace. Cantos arredondados sutis (8px). Sem gradientes decorativos.</div>
+    </div>
+  </div>
+</section>
+</main>
+
+</body>
+</html>

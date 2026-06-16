@@ -1,0 +1,1439 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solicitação de Bolsa — Arca N. S. da Providência</title>
+<style>
+:root {
+  --bg: oklch(97.5% 0.005 85);
+  --surface: oklch(100% 0 0);
+  --fg: oklch(25% 0.06 250);
+  --muted: oklch(50% 0.03 250);
+  --border: oklch(90% 0.008 85);
+  --accent: oklch(25% 0.06 250);
+  --accent-light: oklch(94% 0.02 250);
+  --gold: oklch(72% 0.10 80);
+  --gold-dark: oklch(58% 0.10 80);
+  --gold-light: oklch(94% 0.03 80);
+  --success: oklch(48% 0.14 155);
+  --danger: oklch(52% 0.16 25);
+  --warn: oklch(62% 0.14 75);
+  --font-display: 'Iowan Old Style', 'Charter', Georgia, serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --radius: 8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html {
+  font: 16px/1.55 var(--font-body);
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  min-height: 100vh;
+  padding: 32px 16px 64px;
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.header-logo {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 12px;
+}
+.header-institution {
+  font: 550 12px/1.4 var(--font-body);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.header h1 {
+  font: 600 28px/1.15 var(--font-display);
+  letter-spacing: -0.015em;
+  color: var(--fg);
+  margin-bottom: 8px;
+}
+.header-sub {
+  font-size: 15px;
+  color: var(--muted);
+  max-width: 50ch;
+  margin: 0 auto;
+}
+
+/* Progress */
+.step-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg);
+  padding: 16px 0 0;
+  margin-bottom: 28px;
+}
+.progress-bar {
+  display: flex;
+  gap: 6px;
+  padding-bottom: 16px;
+}
+.progress-step {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background 0.3s;
+}
+.progress-step.active {
+  background: var(--accent);
+}
+.progress-step.done {
+  background: var(--gold);
+}
+
+.step-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.step-label .current {
+  color: var(--accent);
+  font-weight: 550;
+}
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font: 600 20px/1.2 var(--font-display);
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+.section-desc {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+/* Form fields */
+.field {
+  margin-bottom: 20px;
+}
+.field:last-child {
+  margin-bottom: 0;
+}
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 550;
+  letter-spacing: 0.02em;
+  color: var(--fg);
+  margin-bottom: 6px;
+}
+.field label .required {
+  color: var(--danger);
+  margin-left: 2px;
+}
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 10px 14px;
+  font: 15px/1.5 var(--font-body);
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+.field input.error,
+.field select.error {
+  border-color: var(--danger);
+}
+.field .hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.field .error-msg {
+  font-size: 12px;
+  color: var(--danger);
+  margin-top: 4px;
+  display: none;
+}
+.field input.error + .error-msg,
+.field select.error + .error-msg,
+.field .upload-area:has(input.error) + .error-msg {
+  display: block;
+}
+.upload-area:has(input.error) {
+  border-color: var(--danger);
+}
+.field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 560px) {
+  .row { grid-template-columns: 1fr; }
+}
+
+/* Alunos dynamic cards */
+.aluno-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative;
+  background: var(--surface);
+}
+.aluno-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.aluno-card-header span {
+  font: 550 14px/1 var(--font-body);
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+.aluno-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.aluno-fields .full { grid-column: 1 / -1; }
+.aluno-fields input, .aluno-fields select {
+  width: 100%;
+  padding: 10px 12px;
+  font: 14px/1.5 var(--font-body);
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.aluno-fields input:focus, .aluno-fields select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+.aluno-fields label {
+  display: block;
+  font-size: 12px;
+  font-weight: 550;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.aluno-uploads {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.aluno-uploads .upload-area {
+  padding: 12px;
+}
+.aluno-uploads .upload-label {
+  font-size: 12px;
+}
+.btn-remove {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+  transition: all 0.15s;
+}
+.btn-remove:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* Upload */
+.upload-area {
+  position: relative;
+  border: 1.5px dashed var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.upload-area:hover, .upload-area.dragover {
+  border-color: var(--gold);
+  background: var(--gold-light);
+}
+.upload-area input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.upload-label {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.upload-label strong {
+  color: var(--gold-dark);
+}
+.upload-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.upload-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--accent-light);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--fg);
+}
+.upload-file .remove-file {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+}
+.upload-file .remove-file:hover {
+  color: var(--danger);
+}
+
+/* Outros filhos */
+.filho-row {
+  display: grid;
+  grid-template-columns: 1fr 160px 140px 32px;
+  gap: 10px;
+  align-items: start;
+  margin-bottom: 10px;
+}
+.filho-row input {
+  width: 100%;
+  padding: 10px 12px;
+  font: 15px/1.5 var(--font-body);
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.filho-row input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.btn-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font: 500 13px/1 var(--font-body);
+  letter-spacing: 0.02em;
+  color: var(--gold-dark);
+  background: var(--gold-light);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-add:hover {
+  background: oklch(90% 0.04 80);
+}
+
+/* Summary row */
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+}
+.summary-row .label { color: var(--muted); }
+.summary-row .value { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Benfeitores */
+.benfeitor-row input {
+  width: 100%;
+  padding: 10px 12px;
+  font: 14px/1.5 var(--font-body);
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.benfeitor-row input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+/* Checkboxes */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.checkbox-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.checkbox-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+.checkbox-item label {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--fg);
+  cursor: pointer;
+}
+.checkbox-sub {
+  margin-left: 28px;
+  margin-top: 6px;
+}
+.checkbox-sub input {
+  width: 200px;
+  padding: 6px 10px;
+  font: 14px var(--font-body);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+}
+.checkbox-sub input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+/* Veiculos */
+.veiculo-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 100px 40px;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 12px;
+}
+.veiculo-row input {
+  width: 100%;
+  padding: 10px 12px;
+  font: 14px/1.5 var(--font-body);
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+}
+.veiculo-row input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+/* Desconto input */
+.desconto-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+}
+.desconto-field input {
+  width: 100px;
+  padding: 10px 12px;
+  font: 16px/1.5 var(--font-body);
+  text-align: center;
+  font-weight: 600;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+  font-variant-numeric: tabular-nums;
+}
+.desconto-field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+.desconto-field span {
+  font-size: 15px;
+  color: var(--muted);
+}
+
+/* Buttons */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 32px;
+}
+.btn {
+  padding: 12px 28px;
+  font: 550 14px/1 var(--font-body);
+  letter-spacing: 0.02em;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid transparent;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: oklch(22% 0.06 250);
+}
+.btn-primary:active {
+  transform: translateY(1px);
+}
+.btn-secondary {
+  background: var(--surface);
+  color: var(--fg);
+  border-color: var(--border);
+}
+.btn-secondary:hover {
+  background: var(--bg);
+}
+
+/* Success state */
+.success-screen {
+  text-align: center;
+  padding: 60px 20px;
+  display: none;
+}
+.success-screen.visible {
+  display: block;
+}
+.success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: oklch(92% 0.06 155);
+  color: var(--success);
+  display: inline-grid;
+  place-items: center;
+  margin-bottom: 20px;
+}
+.success-icon svg {
+  width: 32px;
+  height: 32px;
+}
+.success-screen h2 {
+  font: 600 24px/1.2 var(--font-display);
+  letter-spacing: -0.01em;
+  margin-bottom: 10px;
+}
+.success-screen p {
+  font-size: 15px;
+  color: var(--muted);
+  max-width: 42ch;
+  margin: 0 auto;
+}
+
+/* Esconder etapas */
+.step { display: none; }
+.step.active { display: block; }
+
+/* Focus visible */
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible,
+.checkbox-sub input:focus-visible,
+.aluno-row input:focus-visible,
+.aluno-row select:focus-visible,
+.veiculo-row input:focus-visible,
+.desconto-field input:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+  outline: none;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.btn-remove:focus-visible,
+.btn-add:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Button disabled/loading */
+.btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-primary[disabled]:hover {
+  background: var(--accent);
+}
+
+/* Aceite shake */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+.aceite-error {
+  animation: shake 0.4s ease;
+}
+.aceite-highlight label {
+  color: var(--danger) !important;
+}
+
+/* Responsive */
+@media (max-width: 560px) {
+  body { padding: 20px 12px 48px; }
+  .card { padding: 20px 16px; }
+  .header h1 { font-size: 22px; }
+  .aluno-fields { grid-template-columns: 1fr; }
+  .aluno-uploads { grid-template-columns: 1fr; }
+  .benfeitor-row, .benfeitor-header { grid-template-columns: 28px 1fr !important; }
+  .benfeitor-row input[type="email"] { grid-column: 2; }
+  .veiculo-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .veiculo-row .btn-remove {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: auto;
+    padding: 8px;
+    font-size: 13px;
+  }
+  .actions { flex-direction: column; }
+  .btn { width: 100%; text-align: center; }
+  .desconto-field { flex-wrap: wrap; }
+  .checkbox-sub input { width: 100%; }
+  .filho-row { grid-template-columns: 1fr; }
+  .filho-row input[type="date"] { width: 100%; }
+}
+
+button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header class="header">
+    <svg width="64" height="64" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="header-logo" role="img" aria-label="Logo Arca N. S. da Providência" style="margin-bottom:12px;"><defs><clipPath id="form-clip"><circle cx="110" cy="110" r="84"/></clipPath><radialGradient id="form-bg" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="#1e2a4a"/><stop offset="100%" stop-color="#0f1729"/></radialGradient></defs><circle cx="110" cy="110" r="106" fill="url(#form-bg)" stroke="#c9a84c" stroke-width="3"/><circle cx="110" cy="110" r="98" fill="none" stroke="#c9a84c" stroke-width="0.6" opacity="0.35"/><image href="base1.png" x="22" y="30" width="176" height="184" clip-path="url(#form-clip)" preserveAspectRatio="xMidYMid slice"/><circle cx="110" cy="110" r="84" fill="none" stroke="#0f1729" stroke-width="12" opacity="0.2"/><path id="form-top" d="M 18,110 a 92,92 0 0,1 184,0" fill="none"/><text fill="#c9a84c" font-family="'Iowan Old Style','Charter','Palatino',Georgia,serif" font-size="12.5" font-weight="700" letter-spacing="0.18em"><textPath href="#form-top" startOffset="50%" text-anchor="middle">ARCA</textPath></text><path id="form-bot" d="M 20,118 a 90,90 0 0,0 180,0" fill="none"/><text fill="#c9a84c" font-family="'Iowan Old Style','Charter','Palatino',Georgia,serif" font-size="11" font-weight="700" letter-spacing="0.14em"><textPath href="#form-bot" startOffset="50%" text-anchor="middle">N. S. DA PROVIDÊNCIA</textPath></text></svg>
+    <div class="header-institution">Arca N. S. da Providência</div>
+    <h1>Solicitação de Bolsa</h1>
+    <p class="header-sub">Preencha todos os campos obrigatórios para submeter sua solicitação.</p>
+  </header>
+
+  <div class="step-nav">
+    <div class="step-label">
+      <span class="current" id="step-name">1. Dados dos Pais</span>
+      <span id="step-count">Etapa 1 de 6</span>
+    </div>
+    <div class="progress-bar" id="progress-bar">
+      <div class="progress-step active"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+    </div>
+  </div>
+
+  <form id="bolsa-form" novalidate>
+
+    <!-- STEP 1: Dados dos pais -->
+    <div class="step active" data-step="1">
+      <div class="card">
+        <h2 class="section-title">Dados dos Solicitantes</h2>
+        <p class="section-desc">Informações pessoais dos pais ou responsáveis.</p>
+
+        <div class="field">
+          <label for="escola">Escola <span class="required">*</span></label>
+          <select id="escola" name="escola" required>
+            <option value="" disabled selected>Selecione a escola</option>
+            <option value="colegio_sao_jose">Colégio São José</option>
+            <option value="escola_santa_catarina">Escola Santa Catarina</option>
+            <option value="escola_nossa_senhora">Escola Nossa Senhora da Providência</option>
+          </select>
+          <div class="error-msg" id="escola-error">Selecione a escola</div>
+        </div>
+
+        <div style="height: 1px; background: var(--border); margin: 24px 0;"></div>
+
+        <div class="field">
+          <label for="nome_pai">Nome e sobrenome do pai <span class="required">*</span></label>
+          <input type="text" id="nome_pai" name="nome_pai" required autocomplete="name">
+          <div class="error-msg" id="nome_pai-error">Campo obrigatório</div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="rg_pai">RG do pai <span class="required">*</span></label>
+            <input type="text" id="rg_pai" name="rg_pai" required>
+            <div class="error-msg" id="rg_pai-error">Campo obrigatório</div>
+          </div>
+          <div class="field">
+            <label for="cpf_pai">CPF do pai <span class="required">*</span></label>
+            <input type="text" id="cpf_pai" name="cpf_pai" required placeholder="000.000.000-00">
+            <div class="error-msg" id="cpf_pai-error">Campo obrigatório</div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="profissao_pai">Profissão do pai</label>
+          <input type="text" id="profissao_pai" name="profissao_pai">
+        </div>
+        <div class="field">
+          <label>Documento do pai (RG ou CPF) <span class="required">*</span></label>
+          <div class="upload-area" id="upload-doc-pai">
+            <input type="file" name="doc_pai" accept="image/*,.pdf">
+            <div class="upload-label"><strong>Clique ou arraste</strong> para enviar foto do RG ou CPF do pai</div>
+            <div class="upload-preview" id="preview-doc-pai"></div>
+          </div>
+          <div class="error-msg" id="doc_pai-error">Envie o documento</div>
+        </div>
+
+        <div style="height: 1px; background: var(--border); margin: 24px 0;"></div>
+
+        <div class="field">
+          <label for="nome_mae">Nome e sobrenome da mãe <span class="required">*</span></label>
+          <input type="text" id="nome_mae" name="nome_mae" required>
+          <div class="error-msg" id="nome_mae-error">Campo obrigatório</div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="cpf_mae">CPF da mãe <span class="required">*</span></label>
+            <input type="text" id="cpf_mae" name="cpf_mae" required placeholder="000.000.000-00">
+            <div class="error-msg" id="cpf_mae-error">Campo obrigatório</div>
+          </div>
+          <div class="field">
+            <label for="profissao_mae">Profissão da mãe</label>
+            <input type="text" id="profissao_mae" name="profissao_mae">
+          </div>
+        </div>
+        <div class="field">
+          <label>Documento da mãe (RG ou CPF) <span class="required">*</span></label>
+          <div class="upload-area" id="upload-doc-mae">
+            <input type="file" name="doc_mae" accept="image/*,.pdf">
+            <div class="upload-label"><strong>Clique ou arraste</strong> para enviar foto do RG ou CPF da mãe</div>
+            <div class="upload-preview" id="preview-doc-mae"></div>
+          </div>
+          <div class="error-msg" id="doc_mae-error">Envie o documento</div>
+        </div>
+
+        <div style="height: 1px; background: var(--border); margin: 24px 0;"></div>
+
+        <div class="field">
+          <label>Certidão de Casamento <span class="required">*</span></label>
+          <div class="upload-area" id="upload-certidao">
+            <input type="file" name="certidao_casamento" accept="image/*,.pdf">
+            <div class="upload-label"><strong>Clique ou arraste</strong> para enviar a Certidão de Casamento</div>
+            <div class="upload-preview" id="preview-certidao"></div>
+          </div>
+        </div>
+
+        <div style="height: 1px; background: var(--border); margin: 24px 0;"></div>
+
+        <div class="field">
+          <label for="endereco">Endereço completo <span class="required">*</span></label>
+          <input type="text" id="endereco" name="endereco" required>
+          <div class="error-msg" id="endereco-error">Campo obrigatório</div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="cep">CEP</label>
+            <input type="text" id="cep" name="cep" placeholder="00000-000">
+          </div>
+          <div class="field">
+            <label for="telefone">Telefone <span class="required">*</span></label>
+            <input type="tel" id="telefone" name="telefone" required placeholder="(00) 00000-0000">
+            <div class="error-msg" id="telefone-error">Campo obrigatório</div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" placeholder="exemplo@email.com">
+        </div>
+
+        <div class="field">
+          <label>Comprovante de Endereço <span class="required">*</span></label>
+          <div class="upload-area" id="upload-endereco">
+            <input type="file" name="comp_endereco" accept="image/*,.pdf">
+            <div class="upload-label"><strong>Clique ou arraste</strong> para enviar comprovante de endereço</div>
+            <div class="upload-preview" id="preview-endereco"></div>
+          </div>
+          <div class="error-msg" id="comp_endereco-error">Envie o comprovante</div>
+        </div>
+      </div>
+
+      <!-- Outros filhos -->
+      <div class="card" style="margin-top: 24px;">
+        <h2 class="section-title">Outros Filhos</h2>
+        <p class="section-desc">Informe nome e data de nascimento dos demais filhos que não estão na escola.</p>
+
+        <div id="filhos-list">
+          <div class="filho-row">
+            <input type="text" placeholder="Nome completo" data-field="filho_nome">
+            <input type="text" placeholder="000.000.000-00" data-field="filho_cpf">
+            <input type="date" data-field="filho_nascimento" title="Data de nascimento">
+            <button type="button" class="btn-remove" onclick="removeFilho(this)" title="Remover">×</button>
+          </div>
+        </div>
+        <button type="button" class="btn-add" onclick="addFilho()">+ Adicionar filho</button>
+      </div>
+
+      <div class="actions" style="justify-content: flex-end;">
+        <button type="button" class="btn btn-primary" onclick="nextStep()">Próximo</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Dados dos alunos -->
+    <div class="step" data-step="2">
+      <div class="card">
+        <h2 class="section-title">Dados dos Alunos</h2>
+        <p class="section-desc">Informe os alunos para os quais solicita a bolsa.</p>
+
+        <div id="alunos-list">
+          <div class="aluno-card">
+            <div class="aluno-card-header">
+              <span>Aluno 1</span>
+              <button type="button" class="btn-remove" onclick="removeAluno(this)" title="Remover aluno">×</button>
+            </div>
+            <div class="aluno-fields">
+              <div class="full">
+                <label>Nome completo do aluno</label>
+                <input type="text" placeholder="Nome completo" data-field="aluno_nome">
+              </div>
+              <div>
+                <label>CPF do aluno</label>
+                <input type="text" placeholder="000.000.000-00" data-field="aluno_cpf">
+              </div>
+              <div>
+                <label>Série</label>
+                <select data-field="aluno_serie">
+                  <option value="">Selecione</option>
+                  <option>Maternal</option>
+                  <option>Jardim I</option>
+                  <option>Jardim II</option>
+                  <option>1º Ano</option>
+                  <option>2º Ano</option>
+                  <option>3º Ano</option>
+                  <option>4º Ano</option>
+                  <option>5º Ano</option>
+                  <option>6º Ano</option>
+                  <option>7º Ano</option>
+                  <option>8º Ano</option>
+                  <option>9º Ano</option>
+                  <option>1º EM</option>
+                  <option>2º EM</option>
+                  <option>3º EM</option>
+                </select>
+              </div>
+              <div>
+                <label>Mensalidade (R$)</label>
+                <input type="text" placeholder="0,00" data-field="aluno_mensalidade" oninput="calcTotals()">
+              </div>
+            </div>
+            <div class="aluno-uploads">
+              <div class="upload-area">
+                <input type="file" accept="image/*,.pdf" data-field="aluno_doc_rg">
+                <div class="upload-label"><strong>RG ou CPF</strong> do aluno</div>
+                <div class="upload-preview"></div>
+              </div>
+              <div class="upload-area">
+                <input type="file" accept="image/*,.pdf" data-field="aluno_certidao">
+                <div class="upload-label"><strong>Certidão de Nascimento</strong></div>
+                <div class="upload-preview"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn-add" onclick="addAluno()">+ Adicionar aluno</button>
+
+        <div style="margin-top: 24px;">
+          <div class="summary-row">
+            <span class="label">Total sem desconto</span>
+            <span class="value" id="total-sem">R$ 0,00</span>
+          </div>
+          <div class="desconto-field">
+            <span>Desconto solicitado:</span>
+            <input type="number" id="desconto-pct" min="0" max="100" value="" placeholder="%" oninput="calcTotals()">
+            <span>% do total</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Total com desconto</span>
+            <span class="value" id="total-com">R$ 0,00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" onclick="prevStep()">Voltar</button>
+        <button type="button" class="btn btn-primary" onclick="nextStep()">Próximo</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Renda familiar -->
+    <div class="step" data-step="3">
+      <div class="card">
+        <h2 class="section-title">Renda Familiar</h2>
+        <p class="section-desc">Declaração juramentada de renda mensal do grupo familiar.</p>
+
+        <div class="row">
+          <div class="field">
+            <label for="renda_pai">Renda do pai (R$)</label>
+            <input type="text" id="renda_pai" name="renda_pai" placeholder="0,00" oninput="calcRenda()">
+          </div>
+          <div class="field">
+            <label for="renda_mae">Renda da mãe (R$)</label>
+            <input type="text" id="renda_mae" name="renda_mae" placeholder="0,00" oninput="calcRenda()">
+          </div>
+        </div>
+        <div class="field">
+          <label for="renda_outros">Renda de outros membros (R$)</label>
+          <input type="text" id="renda_outros" name="renda_outros" placeholder="0,00" oninput="calcRenda()">
+        </div>
+        <div class="summary-row" style="margin-top: 16px;">
+          <span class="label">Total de renda familiar</span>
+          <span class="value" id="total-renda">R$ 0,00</span>
+        </div>
+
+        <div style="height: 1px; background: var(--border); margin: 24px 0;"></div>
+
+        <div class="field">
+          <label for="qtd_pessoas">Pessoas no grupo familiar <span class="required">*</span></label>
+          <input type="number" id="qtd_pessoas" name="qtd_pessoas" min="1" required placeholder="Total de pessoas">
+          <div class="error-msg" id="qtd_pessoas-error">Campo obrigatório</div>
+        </div>
+
+        <div style="height: 1px; background: var(--border); margin: 24px 0;"></div>
+
+        <div class="field">
+          <label>Extrato do Imposto de Renda <span class="required">*</span></label>
+          <p style="font-size: 12px; color: var(--muted); margin-bottom: 8px;">Para comprovação dos dependentes e renda declarada.</p>
+          <div class="upload-area" id="upload-ir">
+            <input type="file" name="extrato_ir" accept="image/*,.pdf">
+            <div class="upload-label"><strong>Clique ou arraste</strong> para enviar o extrato do Imposto de Renda</div>
+            <div class="upload-preview" id="preview-ir"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" onclick="prevStep()">Voltar</button>
+        <button type="button" class="btn btn-primary" onclick="nextStep()">Próximo</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Despesas mensais -->
+    <div class="step" data-step="4">
+      <div class="card">
+        <h2 class="section-title">Despesas Mensais</h2>
+        <p class="section-desc">Informe as despesas mensais do grupo familiar.</p>
+
+        <div class="field">
+          <label for="desp_aluguel">Aluguel (R$)</label>
+          <input type="text" id="desp_aluguel" name="desp_aluguel" placeholder="0,00" oninput="calcDespesas()">
+        </div>
+        <div class="field">
+          <label for="desp_servicos">Serviços (luz, água, gás, taxas) (R$)</label>
+          <input type="text" id="desp_servicos" name="desp_servicos" placeholder="0,00" oninput="calcDespesas()">
+        </div>
+        <div class="field">
+          <label for="desp_tv">TV / Streaming (R$)</label>
+          <input type="text" id="desp_tv" name="desp_tv" placeholder="0,00" oninput="calcDespesas()">
+        </div>
+        <div class="field">
+          <label for="desp_celular">Plano de celular (R$)</label>
+          <input type="text" id="desp_celular" name="desp_celular" placeholder="0,00" oninput="calcDespesas()">
+        </div>
+        <div class="field">
+          <label for="desp_parcelas_cel">Parcelas de aparelhos celular (R$)</label>
+          <input type="text" id="desp_parcelas_cel" name="desp_parcelas_cel" placeholder="0,00" oninput="calcDespesas()">
+        </div>
+        <div class="field">
+          <label for="desp_internet">Plano de internet (R$)</label>
+          <input type="text" id="desp_internet" name="desp_internet" placeholder="0,00" oninput="calcDespesas()">
+        </div>
+        <div class="summary-row" style="margin-top: 16px;">
+          <span class="label">Total de despesas</span>
+          <span class="value" id="total-despesas">R$ 0,00</span>
+        </div>
+
+        <div style="height: 1px; background: var(--border); margin: 24px 0;"></div>
+
+        <div class="field">
+          <label>Extrato bancário dos últimos 3 meses <span class="required">*</span></label>
+          <p style="font-size: 12px; color: var(--muted); margin-bottom: 8px;">Envie o extrato de todas as contas bancárias da família.</p>
+          <div class="upload-area" id="upload-extrato-banco">
+            <input type="file" name="extrato_bancario" accept="image/*,.pdf" multiple>
+            <div class="upload-label"><strong>Clique ou arraste</strong> para enviar os extratos bancários (múltiplos arquivos)</div>
+            <div class="upload-preview" id="preview-extrato-banco"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" onclick="prevStep()">Voltar</button>
+        <button type="button" class="btn btn-primary" onclick="nextStep()">Próximo</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Veículos e Benfeitores -->
+    <div class="step" data-step="5">
+      <div class="card">
+        <h2 class="section-title">Veículos da Família</h2>
+        <p class="section-desc">Informe os veículos de propriedade da família, se houver.</p>
+
+        <div id="veiculos-list">
+          <div class="veiculo-row">
+            <input type="text" placeholder="Marca" data-field="veiculo_marca">
+            <input type="text" placeholder="Modelo" data-field="veiculo_modelo">
+            <input type="text" placeholder="Ano" data-field="veiculo_ano">
+            <button type="button" class="btn-remove" onclick="removeVeiculo(this)" title="Remover">×</button>
+          </div>
+        </div>
+        <button type="button" class="btn-add" onclick="addVeiculo()">+ Adicionar veículo</button>
+      </div>
+
+      <div class="card" style="margin-top: 24px;">
+        <h2 class="section-title">Indicação de Benfeitores</h2>
+        <p class="section-desc">Indique 10 pessoas que possam ser contatadas como possíveis benfeitores da escola. <span class="required">*</span></p>
+
+        <div class="benfeitor-header" style="display: grid; grid-template-columns: 28px 1fr 1fr; gap: 10px; margin-bottom: 8px; font-size: 11px; font-weight: 550; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);">
+          <span>#</span>
+          <span>Nome completo</span>
+          <span>E-mail</span>
+        </div>
+        <div id="benfeitores-list">
+          <div class="benfeitor-row" style="display: grid; grid-template-columns: 28px 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 8px;">
+            <span style="font: 550 13px/1 var(--font-body); color: var(--muted); text-align: center;">1</span>
+            <input type="text" placeholder="Nome" name="benfeitor_nome_1" style="width:100%; padding:10px 12px; font:14px/1.5 var(--font-body); color:var(--fg); background:var(--bg); border:1px solid var(--border); border-radius:6px; outline:none;">
+            <input type="email" placeholder="email@exemplo.com" name="benfeitor_email_1" style="width:100%; padding:10px 12px; font:14px/1.5 var(--font-body); color:var(--fg); background:var(--bg); border:1px solid var(--border); border-radius:6px; outline:none;">
+          </div>
+          <div class="benfeitor-row" style="display: grid; grid-template-columns: 28px 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 8px;">
+            <span style="font: 550 13px/1 var(--font-body); color: var(--muted); text-align: center;">2</span>
+            <input type="text" placeholder="Nome" name="benfeitor_nome_2">
+            <input type="email" placeholder="email@exemplo.com" name="benfeitor_email_2">
+          </div>
+          <div class="benfeitor-row" style="display: grid; grid-template-columns: 28px 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 8px;">
+            <span style="font: 550 13px/1 var(--font-body); color: var(--muted); text-align: center;">3</span>
+            <input type="text" placeholder="Nome" name="benfeitor_nome_3">
+            <input type="email" placeholder="email@exemplo.com" name="benfeitor_email_3">
+          </div>
+          <div class="benfeitor-row" style="display: grid; grid-template-columns: 28px 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 8px;">
+            <span style="font: 550 13px/1 var(--font-body); color: var(--muted); text-align: center;">4</span>
+            <input type="text" placeholder="Nome" name="benfeitor_nome_4">
+            <input type="email" placeholder="email@exemplo.com" name="benfeitor_email_4">
+          </div>
+          <div class="benfeitor-row" style="display: grid; grid-template-columns: 28px 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 8px;">
+            <span style="font: 550 13px/1 var(--font-body); color: var(--muted); text-align: center;">5</span>
+            <input type="text" placeholder="Nome" name="benfeitor_nome_5">
+            <input type="email" placeholder="email@exemplo.com" name="benfeitor_email_5">
+          </div>
+          <div class="benfeitor-row" style="display: grid; grid-template-columns: 28px 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 8px;">
+            <span style="font: 550 13px/1 var(--font-body); color: var(--muted); text-align: center;">6</span>
+            <input type="text" placeholder="Nome" name="benfeitor_nome_6">
+            <input type="email" placeholder="email@exemplo.com" name="benfeitor_email_6">
+          </div>
+          <div class="benfeitor-row" style="display: grid; grid-template-columns: 28px 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 8px;">
+            <span style="font: 550 13px/1 var(--font-body); color: var(--muted); text-align: center;">7</span>
+            <input type="text" placeholder="Nome" name="benfeitor_nome_7">
+            <input type="email" placeholder="email@exemplo.com" name="benfeitor_email_7">
+          </div>
+          <div class="benfeitor-row" style="display: grid; grid-template-columns: 28px 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 8px;">
+            <span style="font: 550 13px/1 var(--font-body); color: var(--muted); text-align: center;">8</span>
+            <input type="text" placeholder="Nome" name="benfeitor_nome_8">
+            <input type="email" placeholder="email@exemplo.com" name="benfeitor_email_8">
+          </div>
+          <div class="benfeitor-row" style="display: grid; grid-template-columns: 28px 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 8px;">
+            <span style="font: 550 13px/1 var(--font-body); color: var(--muted); text-align: center;">9</span>
+            <input type="text" placeholder="Nome" name="benfeitor_nome_9">
+            <input type="email" placeholder="email@exemplo.com" name="benfeitor_email_9">
+          </div>
+          <div class="benfeitor-row" style="display: grid; grid-template-columns: 28px 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 8px;">
+            <span style="font: 550 13px/1 var(--font-body); color: var(--muted); text-align: center;">10</span>
+            <input type="text" placeholder="Nome" name="benfeitor_nome_10">
+            <input type="email" placeholder="email@exemplo.com" name="benfeitor_email_10">
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" onclick="prevStep()">Voltar</button>
+        <button type="button" class="btn btn-primary" onclick="nextStep()">Próximo</button>
+      </div>
+    </div>
+
+    <!-- STEP 6: Revisão e envio -->
+    <div class="step" data-step="6">
+      <div class="card">
+        <h2 class="section-title">Revisão e Declaração</h2>
+        <p class="section-desc">Revise as informações antes de enviar. Ao submeter, você declara sob juramento que todas as informações são verdadeiras.</p>
+
+        <div id="review-summary" style="font-size: 14px; line-height: 1.6;"></div>
+
+        <div style="height: 1px; background: var(--border); margin: 24px 0;"></div>
+
+        <div class="checkbox-item">
+          <input type="checkbox" id="aceite" required>
+          <label for="aceite" style="font-size: 13px; color: var(--muted);">
+            Declaro que todas as informações prestadas são verdadeiras e estou ciente das condições de concessão, validade e compromisso de colaboração da bolsa. <span style="color: var(--danger);">*</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" onclick="prevStep()">Voltar</button>
+        <button type="button" class="btn btn-primary" onclick="submitForm()">Enviar Solicitação</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Success screen -->
+  <div class="success-screen" id="success-screen">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2>Solicitação Enviada</h2>
+    <p>Sua solicitação de bolsa foi recebida com sucesso. A direção da escola analisará o pedido e entrará em contato.</p>
+  </div>
+</div>
+
+<script>
+var currentStep = 1;
+var totalSteps = 6;
+var stepNames = [
+  '1. Dados dos Pais',
+  '2. Dados dos Alunos',
+  '3. Renda Familiar',
+  '4. Despesas Mensais',
+  '5. Veículos e Benfeitores',
+  '6. Revisão e Envio'
+];
+
+function updateProgress() {
+  var bars = document.querySelectorAll('.progress-step');
+  bars.forEach(function(b, i) {
+    b.className = 'progress-step';
+    if (i + 1 < currentStep) b.classList.add('done');
+    if (i + 1 === currentStep) b.classList.add('active');
+  });
+  document.getElementById('step-name').textContent = stepNames[currentStep - 1];
+  document.getElementById('step-count').textContent = 'Etapa ' + currentStep + ' de ' + totalSteps;
+}
+
+function showStep(n) {
+  document.querySelectorAll('.step').forEach(function(s) { s.classList.remove('active'); });
+  var target = document.querySelector('[data-step="' + n + '"]');
+  if (target) target.classList.add('active');
+  currentStep = n;
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateStep(n) {
+  var step = document.querySelector('[data-step="' + n + '"]');
+  if (!step) return true;
+  var inputs = step.querySelectorAll('[required]');
+  var valid = true;
+  var firstError = null;
+  inputs.forEach(function(inp) {
+    var empty = inp.type === 'checkbox' ? !inp.checked : inp.type === 'file' ? !inp.files.length : !inp.value.trim();
+    if (empty) {
+      inp.classList.add('error');
+      inp.setAttribute('aria-invalid', 'true');
+      if (!firstError) firstError = inp;
+      valid = false;
+    } else {
+      inp.classList.remove('error');
+      inp.removeAttribute('aria-invalid');
+    }
+  });
+  if (firstError) firstError.focus();
+  return valid;
+}
+
+function nextStep() {
+  validateStep(currentStep);
+  if (currentStep === 5) buildReview();
+  if (currentStep < totalSteps) showStep(currentStep + 1);
+}
+
+function prevStep() {
+  if (currentStep > 1) showStep(currentStep - 1);
+}
+
+// Remove error on input/change
+document.addEventListener('input', function(e) {
+  if (e.target.classList.contains('error')) {
+    e.target.classList.remove('error');
+    e.target.removeAttribute('aria-invalid');
+  }
+});
+document.addEventListener('change', function(e) {
+  if (e.target.classList.contains('error')) {
+    e.target.classList.remove('error');
+    e.target.removeAttribute('aria-invalid');
+  }
+});
+
+// Alunos
+function renumberAlunos() {
+  var cards = document.querySelectorAll('#alunos-list .aluno-card');
+  cards.forEach(function(card, i) {
+    card.querySelector('.aluno-card-header span').textContent = 'Aluno ' + (i + 1);
+  });
+}
+function addAluno() {
+  var list = document.getElementById('alunos-list');
+  var card = list.querySelector('.aluno-card').cloneNode(true);
+  card.querySelectorAll('input').forEach(function(i) { i.value = ''; });
+  card.querySelectorAll('select').forEach(function(s) { s.selectedIndex = 0; });
+  card.querySelectorAll('.upload-preview').forEach(function(p) { p.innerHTML = ''; });
+  list.appendChild(card);
+  initUploads(card);
+  renumberAlunos();
+}
+function removeAluno(btn) {
+  var list = document.getElementById('alunos-list');
+  if (list.children.length > 1) {
+    btn.closest('.aluno-card').remove();
+    calcTotals();
+    renumberAlunos();
+  }
+}
+
+// Outros filhos
+function addFilho() {
+  var list = document.getElementById('filhos-list');
+  var row = list.querySelector('.filho-row').cloneNode(true);
+  row.querySelectorAll('input').forEach(function(i) { i.value = ''; });
+  list.appendChild(row);
+}
+function removeFilho(btn) {
+  var list = document.getElementById('filhos-list');
+  if (list.children.length > 1) {
+    btn.closest('.filho-row').remove();
+  }
+}
+
+// Upload preview — reusable init
+function initUploads(root) {
+  (root || document).querySelectorAll('.upload-area').forEach(function(area) {
+    if (area._uploadInit) return;
+    area._uploadInit = true;
+    var input = area.querySelector('input[type="file"]');
+    var preview = area.querySelector('.upload-preview');
+
+    ['dragenter', 'dragover'].forEach(function(evt) {
+      area.addEventListener(evt, function(e) { e.preventDefault(); area.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(function(evt) {
+      area.addEventListener(evt, function(e) { e.preventDefault(); area.classList.remove('dragover'); });
+    });
+    area.addEventListener('drop', function(e) {
+      input.files = e.dataTransfer.files;
+      input.dispatchEvent(new Event('change'));
+    });
+
+    input.addEventListener('change', function() {
+      preview.innerHTML = '';
+      Array.from(input.files).forEach(function(file) {
+        var tag = document.createElement('span');
+        tag.className = 'upload-file';
+        tag.innerHTML = file.name + ' <button type="button" class="remove-file" title="Remover">&times;</button>';
+        tag.querySelector('.remove-file').addEventListener('click', function(e) {
+          e.stopPropagation();
+          input.value = '';
+          preview.innerHTML = '';
+        });
+        preview.appendChild(tag);
+      });
+    });
+  });
+}
+initUploads();
+
+// Veiculos
+function addVeiculo() {
+  var list = document.getElementById('veiculos-list');
+  var row = list.querySelector('.veiculo-row').cloneNode(true);
+  row.querySelectorAll('input').forEach(function(i) { i.value = ''; });
+  list.appendChild(row);
+}
+function removeVeiculo(btn) {
+  var list = document.getElementById('veiculos-list');
+  if (list.children.length > 1) {
+    btn.closest('.veiculo-row').remove();
+  }
+}
+
+function parseMoney(v) {
+  if (!v) return 0;
+  return parseFloat(v.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0;
+}
+function formatMoney(v) {
+  return 'R$ ' + v.toFixed(2).replace('.', ',');
+}
+
+function calcTotals() {
+  var total = 0;
+  document.querySelectorAll('[data-field="aluno_mensalidade"]').forEach(function(i) {
+    total += parseMoney(i.value);
+  });
+  document.getElementById('total-sem').textContent = formatMoney(total);
+  var pct = parseFloat(document.getElementById('desconto-pct').value) || 0;
+  var desc = total * (1 - pct / 100);
+  document.getElementById('total-com').textContent = formatMoney(desc);
+}
+
+function calcRenda() {
+  var f = document.forms['bolsa-form'];
+  var t = parseMoney(f.renda_pai.value) + parseMoney(f.renda_mae.value) + parseMoney(f.renda_outros.value);
+  document.getElementById('total-renda').textContent = formatMoney(t);
+}
+
+function calcDespesas() {
+  var f = document.forms['bolsa-form'];
+  var fields = ['desp_aluguel','desp_servicos','desp_tv','desp_celular','desp_parcelas_cel','desp_internet'];
+  var t = 0;
+  fields.forEach(function(n) { t += parseMoney(f[n].value); });
+  document.getElementById('total-despesas').textContent = formatMoney(t);
+}
+
+
+function buildReview() {
+  var f = document.forms['bolsa-form'];
+  var html = '';
+  var escolaSel = f.escola;
+  var escolaNome = escolaSel.options[escolaSel.selectedIndex] ? escolaSel.options[escolaSel.selectedIndex].text : '—';
+  html += '<p><strong>Escola:</strong> ' + escolaNome + '</p>';
+  html += '<p><strong>Pai:</strong> ' + (f.nome_pai.value || '—') + ' · RG: ' + (f.rg_pai.value || '—') + ' · CPF: ' + (f.cpf_pai.value || '—') + '</p>';
+  html += '<p><strong>Mãe:</strong> ' + (f.nome_mae.value || '—') + ' · CPF: ' + (f.cpf_mae.value || '—') + '</p>';
+  html += '<p><strong>Endereço:</strong> ' + (f.endereco.value || '—') + '</p>';
+  html += '<p><strong>Telefone:</strong> ' + (f.telefone.value || '—') + '</p>';
+  html += '<p style="margin-top:12px;"><strong>Renda total:</strong> ' + document.getElementById('total-renda').textContent + '</p>';
+  html += '<p><strong>Despesas totais:</strong> ' + document.getElementById('total-despesas').textContent + '</p>';
+  html += '<p><strong>Mensalidade total:</strong> ' + document.getElementById('total-sem').textContent + '</p>';
+  var pct = document.getElementById('desconto-pct').value;
+  html += '<p><strong>Desconto solicitado:</strong> ' + (pct || '—') + '%</p>';
+  html += '<p><strong>Total com desconto:</strong> ' + document.getElementById('total-com').textContent + '</p>';
+  document.getElementById('review-summary').innerHTML = html;
+}
+
+function collectFormData() {
+  var f = document.forms['bolsa-form'];
+  var data = {};
+  var inputs = f.querySelectorAll('input[name], select[name], textarea[name]');
+  inputs.forEach(function(inp) {
+    if (inp.type === 'checkbox') {
+      data[inp.name] = inp.checked;
+    } else {
+      data[inp.name] = inp.value;
+    }
+  });
+  // Alunos
+  data.alunos = [];
+  document.querySelectorAll('#alunos-list .aluno-card').forEach(function(card) {
+    var nome = card.querySelector('[data-field="aluno_nome"]').value;
+    var cpf = card.querySelector('[data-field="aluno_cpf"]').value;
+    var serie = card.querySelector('[data-field="aluno_serie"]').value;
+    var mens = card.querySelector('[data-field="aluno_mensalidade"]').value;
+    if (nome) data.alunos.push({ nome: nome, cpf: cpf, serie: serie, mensalidade: mens });
+  });
+  // Veiculos
+  data.veiculos = [];
+  document.querySelectorAll('#veiculos-list .veiculo-row').forEach(function(row) {
+    var marca = row.querySelector('[data-field="veiculo_marca"]').value;
+    var modelo = row.querySelector('[data-field="veiculo_modelo"]').value;
+    var ano = row.querySelector('[data-field="veiculo_ano"]').value;
+    if (marca) data.veiculos.push({ marca: marca, modelo: modelo, ano: ano });
+  });
+  data.desconto_solicitado = document.getElementById('desconto-pct').value;
+  data.status = 'pendente';
+  data.data_envio = new Date().toISOString();
+  data.id = Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
+  return data;
+}
+
+function submitForm() {
+  var aceiteEl = document.getElementById('aceite');
+  var aceiteWrap = aceiteEl.closest('.checkbox-item');
+  if (!aceiteEl.checked) {
+    aceiteWrap.classList.remove('aceite-error', 'aceite-highlight');
+    void aceiteWrap.offsetWidth;
+    aceiteWrap.classList.add('aceite-error', 'aceite-highlight');
+    aceiteEl.focus();
+    setTimeout(function() { aceiteWrap.classList.remove('aceite-error', 'aceite-highlight'); }, 2000);
+    return;
+  }
+
+  var btn = document.querySelector('[data-step="6"] .btn-primary');
+  btn.disabled = true;
+  btn.textContent = 'Enviando…';
+
+  setTimeout(function() {
+    var data = collectFormData();
+    var solicitacoes = JSON.parse(localStorage.getItem('bolsa_solicitacoes') || '[]');
+    solicitacoes.push(data);
+    localStorage.setItem('bolsa_solicitacoes', JSON.stringify(solicitacoes));
+
+    document.getElementById('bolsa-form').style.display = 'none';
+    document.querySelector('.step-nav').style.display = 'none';
+    document.getElementById('success-screen').classList.add('visible');
+  }, 600);
+}
+</script>
+</body>
+</html>
