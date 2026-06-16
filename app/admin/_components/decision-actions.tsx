@@ -1,0 +1,156 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import {
+  approveApplication,
+  rejectApplication,
+} from "../_actions/admin-actions";
+
+interface DecisionActionsProps {
+  applicationId: string;
+  requestedDiscount: number;
+  onDecision: (id: string, status: string, desconto_concedido?: number | null) => void;
+}
+
+export function DecisionActions({
+  applicationId,
+  requestedDiscount,
+  onDecision,
+}: DecisionActionsProps) {
+  const [mode, setMode] = useState<"idle" | "approve" | "reject">("idle");
+  const [discount, setDiscount] = useState(String(requestedDiscount));
+  const [reason, setReason] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleApprove = useCallback(async () => {
+    const discountNum = Number(discount);
+    if (isNaN(discountNum) || discountNum < 0 || discountNum > 100) {
+      setError("Desconto deve estar entre 0 e 100.");
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+    onDecision(applicationId, "aprovada", discountNum);
+
+    const result = await approveApplication(applicationId, discountNum, reason || undefined);
+    if (!result.success) {
+      setError(result.error ?? "Erro ao aprovar.");
+      onDecision(applicationId, "pendente");
+    }
+    setSubmitting(false);
+  }, [applicationId, discount, reason, onDecision]);
+
+  const handleReject = useCallback(async () => {
+    setSubmitting(true);
+    setError(null);
+    onDecision(applicationId, "rejeitada");
+
+    const result = await rejectApplication(applicationId, reason || undefined);
+    if (!result.success) {
+      setError(result.error ?? "Erro ao rejeitar.");
+      onDecision(applicationId, "pendente");
+    }
+    setSubmitting(false);
+  }, [applicationId, reason, onDecision]);
+
+  if (mode === "idle") {
+    return (
+      <div className="mt-4 flex gap-2" data-testid="decision-actions">
+        <button
+          type="button"
+          onClick={() => setMode("approve")}
+          className="rounded-md bg-success px-4 py-2 text-sm font-medium text-white hover:bg-success/90"
+          data-testid="approve-trigger"
+        >
+          Aprovar
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode("reject")}
+          className="rounded-md bg-danger px-4 py-2 text-sm font-medium text-white hover:bg-danger/90"
+          data-testid="reject-trigger"
+        >
+          Rejeitar
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="mt-4 rounded-lg border border-border bg-cream p-4"
+      data-testid={mode === "approve" ? "approve-form" : "reject-form"}
+    >
+      <h4 className="font-heading text-sm font-semibold text-fg">
+        {mode === "approve" ? "Aprovar Solicitação" : "Rejeitar Solicitação"}
+      </h4>
+
+      {mode === "approve" && (
+        <div className="mt-3">
+          <label htmlFor="discount" className="block text-sm text-muted">
+            Desconto (%)
+          </label>
+          <input
+            id="discount"
+            type="number"
+            min="0"
+            max="100"
+            value={discount}
+            onChange={(e) => setDiscount(e.target.value)}
+            className="mt-1 w-24 rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-fg"
+            data-testid="discount-input"
+          />
+        </div>
+      )}
+
+      <div className="mt-3">
+        <label htmlFor="reason" className="block text-sm text-muted">
+          Motivo (opcional)
+        </label>
+        <textarea
+          id="reason"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          rows={2}
+          className="mt-1 w-full rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-fg"
+          data-testid="reason-input"
+        />
+      </div>
+
+      {error && (
+        <p className="mt-2 text-sm text-danger" data-testid="decision-error">
+          {error}
+        </p>
+      )}
+
+      <div className="mt-3 flex gap-2">
+        <button
+          type="button"
+          onClick={mode === "approve" ? handleApprove : handleReject}
+          disabled={submitting}
+          className={`rounded-md px-4 py-2 text-sm font-medium text-white disabled:opacity-50 ${
+            mode === "approve"
+              ? "bg-success hover:bg-success/90"
+              : "bg-danger hover:bg-danger/90"
+          }`}
+          data-testid="confirm-decision"
+        >
+          {submitting ? "Processando..." : "Confirmar"}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setMode("idle");
+            setError(null);
+          }}
+          className="rounded-md border border-border px-4 py-2 text-sm text-muted hover:bg-bg"
+          data-testid="cancel-decision"
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  );
+}
