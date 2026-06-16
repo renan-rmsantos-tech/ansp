@@ -1,7 +1,17 @@
-export default function AnoLetivoPage() {
+import { getSchoolYears } from "../_actions/admin-actions";
+import { AnoLetivoClient } from "./client";
+
+export default async function AnoLetivoPage() {
+  const { data: years } = await getSchoolYears();
+
   return (
-    <h1 className="font-heading text-[22px] font-semibold leading-tight tracking-tight">
-      Configuração de Ano Letivo
-    </h1>
+    <div>
+      <h1 className="font-heading text-[22px] font-semibold leading-tight tracking-tight">
+        Configuração de Ano Letivo
+      </h1>
+      <div className="mt-6">
+        <AnoLetivoClient initialYears={years ?? []} />
+      </div>
+    </div>
   );
 }

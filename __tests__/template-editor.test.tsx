@@ -1,0 +1,182 @@
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import { render, screen, fireEvent, cleanup, act } from "@testing-library/react";
+
+const { mockSaveTemplate } = vi.hoisted(() => ({
+  mockSaveTemplate: vi.fn(),
+}));
+
+vi.mock("@/app/admin/_actions/admin-actions", () => ({
+  saveTemplate: mockSaveTemplate,
+  getTemplates: vi.fn(),
+}));
+
+import { TemplateEditor, type TemplateData } from "@/app/admin/_components/template-editor";
+import { TemplatePreview, SAMPLE_DATA } from "@/app/admin/_components/template-preview";
+import { replaceTokens } from "@/lib/templates/token-replacer";
+
+function makeTemplate(overrides: Partial<TemplateData> = {}): TemplateData {
+  return {
+    id: "t-1",
+    tipo: "aprovacao",
+    cabecalho: "Cabeçalho {nome_pai}",
+    corpo: "Corpo {aluno} {desconto}%",
+    rodape: "Rodapé {data}",
+    ...overrides,
+  };
+}
+
+describe("TemplateEditor", () => {
+  afterEach(cleanup);
+  beforeEach(() => vi.clearAllMocks());
+
+  it("renders two tabs (Aprovação/Rejeição)", () => {
+    render(<TemplateEditor initialTemplates={[]} />);
+    expect(screen.getByTestId("tab-aprovacao")).toBeDefined();
+    expect(screen.getByTestId("tab-rejeicao")).toBeDefined();
+    expect(screen.getByTestId("tab-aprovacao").textContent).toBe("Aprovação");
+    expect(screen.getByTestId("tab-rejeicao").textContent).toBe("Rejeição");
+  });
+
+  it("displays all three sections (cabeçalho, corpo, rodapé) per template", () => {
+    const templates = [makeTemplate()];
+    render(<TemplateEditor initialTemplates={templates} />);
+
+    expect(screen.getByTestId("field-cabecalho")).toBeDefined();
+    expect(screen.getByTestId("field-corpo")).toBeDefined();
+    expect(screen.getByTestId("field-rodape")).toBeDefined();
+  });
+
+  it("loads initial template data into fields", () => {
+    const templates = [
+      makeTemplate({
+        tipo: "aprovacao",
+        cabecalho: "Header A",
+        corpo: "Body A",
+        rodape: "Footer A",
+      }),
+    ];
+    render(<TemplateEditor initialTemplates={templates} />);
+
+    expect((screen.getByTestId("field-cabecalho") as HTMLTextAreaElement).value).toBe("Header A");
+    expect((screen.getByTestId("field-corpo") as HTMLTextAreaElement).value).toBe("Body A");
+    expect((screen.getByTestId("field-rodape") as HTMLTextAreaElement).value).toBe("Footer A");
+  });
+
+  it("switches tabs and shows different template data", () => {
+    const templates = [
+      makeTemplate({ tipo: "aprovacao", cabecalho: "Aprovação Header" }),
+      makeTemplate({ id: "t-2", tipo: "rejeicao", cabecalho: "Rejeição Header" }),
+    ];
+    render(<TemplateEditor initialTemplates={templates} />);
+
+    expect((screen.getByTestId("field-cabecalho") as HTMLTextAreaElement).value).toBe("Aprovação Header");
+
+    fireEvent.click(screen.getByTestId("tab-rejeicao"));
+    expect((screen.getByTestId("field-cabecalho") as HTMLTextAreaElement).value).toBe("Rejeição Header");
+  });
+
+  it("displays all 8 available tokens", () => {
+    render(<TemplateEditor initialTemplates={[]} />);
+
+    const tokens = screen.getAllByTestId("token-item");
+    expect(tokens).toHaveLength(8);
+
+    const tokenTexts = tokens.map((t) => t.textContent);
+    expect(tokenTexts).toContain("{nome_pai}");
+    expect(tokenTexts).toContain("{nome_mae}");
+    expect(tokenTexts).toContain("{escola}");
+    expect(tokenTexts).toContain("{aluno}");
+    expect(tokenTexts).toContain("{desconto}");
+    expect(tokenTexts).toContain("{data}");
+    expect(tokenTexts).toContain("{motivo}");
+    expect(tokenTexts).toContain("{ano_letivo}");
+  });
+
+  it("saves template and shows success message", async () => {
+    mockSaveTemplate.mockResolvedValueOnce({ success: true });
+    const templates = [makeTemplate()];
+
+    render(<TemplateEditor initialTemplates={templates} />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("save-button"));
+    });
+
+    expect(mockSaveTemplate).toHaveBeenCalledWith({
+      tipo: "aprovacao",
+      cabecalho: "Cabeçalho {nome_pai}",
+      corpo: "Corpo {aluno} {desconto}%",
+      rodape: "Rodapé {data}",
+    });
+    expect(screen.getByTestId("save-message").textContent).toBe(
+      "Modelo salvo com sucesso."
+    );
+  });
+
+  it("shows error message on save failure", async () => {
+    mockSaveTemplate.mockResolvedValueOnce({
+      success: false,
+      error: "Erro ao salvar modelo.",
+    });
+
+    render(<TemplateEditor initialTemplates={[makeTemplate()]} />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("save-button"));
+    });
+
+    expect(screen.getByTestId("save-message").textContent).toBe(
+      "Erro ao salvar modelo."
+    );
+  });
+
+  it("saving template persists changes and re-renders preview", async () => {
+    mockSaveTemplate.mockResolvedValueOnce({ success: true });
+    const templates = [makeTemplate({ cabecalho: "Olá {nome_pai}" })];
+
+    render(<TemplateEditor initialTemplates={templates} />);
+
+    fireEvent.change(screen.getByTestId("field-cabecalho"), {
+      target: { value: "Prezado {nome_pai}" },
+    });
+
+    const preview = screen.getByTestId("template-preview");
+    expect(preview.textContent).toContain("Prezado João da Silva");
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("save-button"));
+    });
+
+    expect(mockSaveTemplate).toHaveBeenCalledWith(
+      expect.objectContaining({ cabecalho: "Prezado {nome_pai}" })
+    );
+  });
+});
+
+describe("TemplatePreview", () => {
+  afterEach(cleanup);
+
+  it("replaces tokens with sample data correctly", () => {
+    render(
+      <TemplatePreview
+        cabecalho="Para: {nome_pai} e {nome_mae}"
+        corpo="Aluno(s): {aluno} — Desconto: {desconto}% — Ano: {ano_letivo}"
+        rodape="Data: {data} — Motivo: {motivo}"
+      />
+    );
+
+    const preview = screen.getByTestId("template-preview");
+    expect(preview.textContent).toContain("João da Silva");
+    expect(preview.textContent).toContain("Maria da Silva");
+    expect(preview.textContent).toContain("Pedro da Silva, Ana da Silva");
+    expect(preview.textContent).toContain("50%");
+    expect(preview.textContent).toContain("2026");
+    expect(preview.textContent).toContain("Renda familiar insuficiente");
+  });
+
+  it("handles empty template gracefully", () => {
+    render(<TemplatePreview cabecalho="" corpo="" rodape="" />);
+    const preview = screen.getByTestId("template-preview");
+    expect(preview).toBeDefined();
+  });
+});
