@@ -79,14 +79,14 @@ Acesse:
 
 ### Desenvolvimento local
 
-Com `AUTH_BYPASS=true` no `.env.local` (padrão), o login aceita credenciais fixas sem precisar criar usuários no Supabase Auth:
+Com `AUTH_BYPASS=true` (local ou Vercel), o login aceita credenciais fixas sem precisar criar usuários no Supabase Auth:
 
 | Campo | Valor |
 |-------|-------|
 | Email | `admin@admin.com` |
 | Senha | `admin123` |
 
-> O bypass só funciona em `NODE_ENV=development`. Em produção é ignorado.
+> Requer também `SUPABASE_SERVICE_ROLE_KEY` configurada — o painel admin usa a service role para contornar RLS quando não há sessão Supabase real. **Não use `AUTH_BYPASS` em produção final** — crie contas reais no Supabase Auth (abaixo).
 
 ### Produção
 

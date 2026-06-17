@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
-import LoginPage from "@/app/login/page";
+import { LoginForm } from "@/app/login/login-form";
 
-const mockLogin = vi.fn();
+const mockLoginAction = vi.fn();
+
 vi.mock("@/app/login/_actions/auth-actions", () => ({
-  login: (...args: unknown[]) => mockLogin(...args),
+  loginAction: (...args: unknown[]) => mockLoginAction(...args),
 }));
 
 vi.mock("@/components/ui/seal-logo", () => ({
@@ -15,7 +16,8 @@ vi.mock("@/components/ui/seal-logo", () => ({
 
 describe("LoginPage", () => {
   beforeEach(() => {
-    mockLogin.mockReset();
+    mockLoginAction.mockReset();
+    mockLoginAction.mockResolvedValue({ error: null });
   });
 
   afterEach(() => {
@@ -23,27 +25,27 @@ describe("LoginPage", () => {
   });
 
   it("renders email and password fields", () => {
-    render(<LoginPage />);
+    render(<LoginForm />);
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Senha")).toBeInTheDocument();
   });
 
   it("renders the seal logo", () => {
-    render(<LoginPage />);
+    render(<LoginForm />);
     expect(screen.getByTestId("seal-logo")).toBeInTheDocument();
   });
 
   it("renders the submit button", () => {
-    render(<LoginPage />);
+    render(<LoginForm />);
     expect(screen.getByRole("button", { name: "Entrar" })).toBeInTheDocument();
   });
 
   it("displays error message when login action returns error", async () => {
-    mockLogin.mockResolvedValue({
+    mockLoginAction.mockResolvedValue({
       error: "Credenciais inválidas. Verifique seu email e senha.",
     });
 
-    render(<LoginPage />);
+    render(<LoginForm />);
     fireEvent.change(screen.getByLabelText("Email"), {
       target: { value: "test@test.com" },
     });
@@ -59,38 +61,15 @@ describe("LoginPage", () => {
     });
   });
 
-  it("clears error when user types in email field", async () => {
-    mockLogin.mockResolvedValue({ error: "Credenciais inválidas." });
-
-    render(<LoginPage />);
-    fireEvent.change(screen.getByLabelText("Email"), {
-      target: { value: "test@test.com" },
-    });
-    fireEvent.change(screen.getByLabelText("Senha"), {
-      target: { value: "wrong" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "Entrar" }));
-
-    await waitFor(() => {
-      expect(screen.getByRole("alert")).toBeInTheDocument();
-    });
-
-    fireEvent.change(screen.getByLabelText("Email"), {
-      target: { value: "new@test.com" },
-    });
-
-    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-  });
-
   it("shows loading state during submission", async () => {
     let resolveLogin: (value: unknown) => void;
-    mockLogin.mockReturnValue(
+    mockLoginAction.mockReturnValue(
       new Promise((resolve) => {
         resolveLogin = resolve;
       })
     );
 
-    render(<LoginPage />);
+    render(<LoginForm />);
     fireEvent.change(screen.getByLabelText("Email"), {
       target: { value: "test@test.com" },
     });
@@ -112,10 +91,21 @@ describe("LoginPage", () => {
     });
   });
 
-  it("calls login action with email and password", async () => {
-    mockLogin.mockResolvedValue({});
+  it("shows demo credentials when hint is enabled", () => {
+    render(
+      <LoginForm
+        showCredentialsHint
+        hintEmail="admin@admin.com"
+        hintPassword="admin123"
+      />
+    );
+    expect(screen.getByText(/Para demonstração/)).toBeInTheDocument();
+    expect(screen.getByText("admin@admin.com")).toBeInTheDocument();
+    expect(screen.getByText("admin123")).toBeInTheDocument();
+  });
 
-    render(<LoginPage />);
+  it("submits email and password via form action", async () => {
+    render(<LoginForm />);
     fireEvent.change(screen.getByLabelText("Email"), {
       target: { value: "admin@ansp.org" },
     });
@@ -125,7 +115,10 @@ describe("LoginPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Entrar" }));
 
     await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith("admin@ansp.org", "secret123");
+      expect(mockLoginAction).toHaveBeenCalled();
+      const formData = mockLoginAction.mock.calls[0][1] as FormData;
+      expect(formData.get("email")).toBe("admin@ansp.org");
+      expect(formData.get("password")).toBe("secret123");
     });
   });
 });

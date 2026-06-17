@@ -9,31 +9,20 @@ import {
   type ContractClause,
   type ContractTokenData,
 } from "@/lib/templates/contract-tokens";
+import { BYPASS_USER, isAuthBypass } from "@/lib/auth/bypass";
 
 type ActionResult = { success: boolean; error?: string };
 
-const DEV_USER = {
-  id: "00000000-0000-0000-0000-000000000000",
-  email: "admin@admin.com",
-};
-
-function isDevBypass() {
-  return (
-    process.env.NODE_ENV === "development" &&
-    process.env.AUTH_BYPASS === "true"
-  );
-}
-
 function resolveDecidedBy(userId: string): string | null {
-  // Dev bypass uses a placeholder UUID that does not exist in auth.users.
-  if (isDevBypass() && userId === DEV_USER.id) {
+  // Auth bypass uses a placeholder UUID that does not exist in auth.users.
+  if (isAuthBypass() && userId === BYPASS_USER.id) {
     return null;
   }
   return userId;
 }
 
 async function requireAuth() {
-  if (isDevBypass()) {
+  if (isAuthBypass()) {
     const cookieStore = await cookies();
     const devAuth = cookieStore.get("dev-auth")?.value;
     if (devAuth !== "true") {
@@ -42,7 +31,7 @@ async function requireAuth() {
     // Sem sessão real, o papel no Postgres seria `anon` e a RLS bloquearia
     // as escritas admin. A service_role ignora RLS (uso server-only).
     const supabase = createServiceClient();
-    return { supabase, user: DEV_USER };
+    return { supabase, user: BYPASS_USER };
   }
 
   const supabase = await createClient();

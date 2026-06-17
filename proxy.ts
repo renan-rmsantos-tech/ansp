@@ -1,11 +1,9 @@
+import { isAuthBypass } from "@/lib/auth/bypass";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
-  if (
-    process.env.NODE_ENV === "development" &&
-    process.env.AUTH_BYPASS === "true"
-  ) {
+  if (isAuthBypass()) {
     const devAuth = request.cookies.get("dev-auth")?.value;
     if (request.nextUrl.pathname.startsWith("/admin") && devAuth !== "true") {
       return NextResponse.redirect(new URL("/login", request.url));
