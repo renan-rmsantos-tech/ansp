@@ -11,7 +11,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json-summary"],
-      include: ["lib/**/*.ts", "app/**/*.{ts,tsx}", "middleware.ts"],
+      include: ["lib/**/*.ts", "app/**/*.{ts,tsx}", "proxy.ts"],
       exclude: ["**/*.d.ts", "**/*.test.*"],
     },
   },

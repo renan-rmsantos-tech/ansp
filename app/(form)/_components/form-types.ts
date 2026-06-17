@@ -74,7 +74,9 @@ export interface FormData {
 }
 
 export const INITIAL_FORM_DATA: FormData = {
-  escola: "",
+  // Por enquanto há apenas uma escola; o campo deixou de ser escolhido no
+  // formulário e usa este valor padrão. Futuramente poderá voltar a ser select.
+  escola: "Colégio São José",
   pai_nome: "",
   pai_rg: "",
   pai_cpf: "",
@@ -101,7 +103,7 @@ export const INITIAL_FORM_DATA: FormData = {
       docCertidao: [],
     },
   ],
-  desconto_solicitado: "",
+  desconto_solicitado: "0",
   renda_pai: "",
   renda_mae: "",
   renda_outros: "",
@@ -134,6 +136,7 @@ export const SERIES_OPTIONS = [
   "Maternal",
   "Jardim I",
   "Jardim II",
+  "Jardim III",
   "1º Ano",
   "2º Ano",
   "3º Ano",

@@ -109,7 +109,8 @@ export default function FormLayout({
             Solicitação de Bolsa
           </h1>
           <p className="mx-auto mt-2 max-w-[50ch] text-[15px] text-muted">
-            Preencha todos os campos obrigatórios para submeter sua solicitação.
+            Consulte a disponibilidade do período de inscrições e preencha os
+            dados solicitados quando o formulário estiver aberto.
           </p>
         </header>
         {children}

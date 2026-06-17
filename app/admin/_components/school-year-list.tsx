@@ -5,6 +5,7 @@ import {
   toggleSchoolYear,
   deleteSchoolYear,
 } from "../_actions/admin-actions";
+import { Modal } from "./modal";
 
 export interface SchoolYear {
   id: string;
@@ -74,17 +75,22 @@ export function SchoolYearList({ years, onYearsChange }: SchoolYearListProps) {
     setLoading(false);
   }, [confirmAction, years, onYearsChange]);
 
+  const confirmTitle =
+    confirmAction?.type === "toggle"
+      ? "Desativar ano letivo?"
+      : "Excluir ano letivo?";
+
   return (
     <div data-testid="school-year-list">
       {years.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted">
-          Nenhum ano letivo cadastrado.
+          Nenhum ano letivo cadastrado. Use o formulário acima para criar o primeiro.
         </p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border text-left text-xs font-semibold uppercase tracking-wider text-muted">
+              <tr className="border-b border-border text-left text-xs font-semibold text-muted">
                 <th className="px-4 py-3">Nome</th>
                 <th className="px-4 py-3">Início</th>
                 <th className="px-4 py-3">Fim</th>
@@ -99,9 +105,7 @@ export function SchoolYearList({ years, onYearsChange }: SchoolYearListProps) {
                   className="border-b border-border last:border-0"
                   data-testid={`school-year-row-${year.id}`}
                 >
-                  <td className="px-4 py-3 font-medium text-fg">
-                    {year.nome}
-                  </td>
+                  <td className="px-4 py-3 font-medium text-fg">{year.nome}</td>
                   <td className="px-4 py-3 text-muted">
                     {new Date(year.data_inicio + "T12:00:00").toLocaleDateString("pt-BR")}
                   </td>
@@ -156,17 +160,14 @@ export function SchoolYearList({ years, onYearsChange }: SchoolYearListProps) {
       )}
 
       {confirmAction && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
-          data-testid="confirm-dialog"
+        <Modal
+          open
+          onClose={() => setConfirmAction(null)}
+          title={confirmTitle}
+          testId="confirm-dialog"
         >
-          <div className="mx-4 w-full max-w-sm rounded-lg border border-border bg-surface p-6">
-            <h3 className="font-heading text-base font-semibold text-fg">
-              {confirmAction.type === "toggle"
-                ? "Desativar ano letivo?"
-                : "Excluir ano letivo?"}
-            </h3>
-            <p className="mt-2 text-sm text-muted">
+          <div className="px-4 py-4">
+            <p className="text-sm text-muted">
               {confirmAction.type === "toggle"
                 ? `Tem certeza que deseja desativar "${confirmAction.nome}"? O período de inscrições será encerrado.`
                 : `Tem certeza que deseja excluir "${confirmAction.nome}"? Esta ação não pode ser desfeita.`}
@@ -195,7 +196,7 @@ export function SchoolYearList({ years, onYearsChange }: SchoolYearListProps) {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

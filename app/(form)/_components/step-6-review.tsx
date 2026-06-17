@@ -11,12 +11,6 @@ interface Step6Props {
   acceptError: boolean;
 }
 
-const ESCOLA_LABELS: Record<string, string> = {
-  colegio_sao_jose: "Colégio São José",
-  escola_santa_catarina: "Escola Santa Catarina",
-  escola_nossa_senhora: "Escola Nossa Senhora da Providência",
-};
-
 export function Step6Review({
   data,
   accepted,
@@ -73,8 +67,7 @@ export function Step6Review({
           data-testid="review-summary"
         >
           <p>
-            <strong>Escola:</strong>{" "}
-            {ESCOLA_LABELS[data.escola] || data.escola || "—"}
+            <strong>Escola:</strong> {data.escola || "—"}
           </p>
           <p>
             <strong>Pai:</strong> {data.pai_nome || "—"} · RG:{" "}
@@ -123,9 +116,9 @@ export function Step6Review({
             {formatMoney(totalComDesconto)}
           </p>
 
-          {data.veiculos.length > 0 && (
-            <div className="mt-3">
-              <strong>Veículos:</strong>
+          <div className="mt-3">
+            <strong>Veículos:</strong>
+            {data.veiculos.length > 0 ? (
               <ul className="ml-4 list-disc">
                 {data.veiculos.map((v, i) => (
                   <li key={i}>
@@ -133,8 +126,10 @@ export function Step6Review({
                   </li>
                 ))}
               </ul>
-            </div>
-          )}
+            ) : (
+              <span> Não possui veículos.</span>
+            )}
+          </div>
         </div>
 
         <div className="my-6 h-px bg-border" />

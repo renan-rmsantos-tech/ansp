@@ -3,6 +3,7 @@
 import type { FormData, OtherChild } from "./form-types";
 import { FileUpload } from "./file-upload";
 import type { UploadedFile } from "./file-upload";
+import { RequiredMark, FieldError, fieldBorder } from "./field-ui";
 
 interface Step1Props {
   data: FormData;
@@ -56,28 +57,19 @@ export function Step1Applicant({ data, onChange, errors }: Step1Props) {
 
         <div className="mb-5">
           <label className="mb-1.5 block text-[13px] font-medium tracking-wide text-fg">
-            Escola <span className="text-danger">*</span>
+            Escola<RequiredMark />
           </label>
+          {/* Por enquanto há apenas uma escola; o campo fica fixo e não editável.
+              Futuramente outras escolas poderão ser adicionadas aqui. */}
           <select
             value={data.escola}
-            onChange={(e) => updateField("escola", e.target.value)}
-            className={`w-full rounded-md border bg-bg px-3.5 py-2.5 text-[15px] text-fg outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20 ${errors.escola ? "border-danger" : "border-border"}`}
+            disabled
+            aria-readonly="true"
+            className="w-full cursor-not-allowed rounded-md border border-border bg-bg px-3.5 py-2.5 text-[15px] text-muted outline-none"
             data-testid="escola-select"
           >
-            <option value="" disabled>
-              Selecione a escola
-            </option>
-            <option value="colegio_sao_jose">Colégio São José</option>
-            <option value="escola_santa_catarina">
-              Escola Santa Catarina
-            </option>
-            <option value="escola_nossa_senhora">
-              Escola Nossa Senhora da Providência
-            </option>
+            <option value="Colégio São José">Colégio São José</option>
           </select>
-          {errors.escola && (
-            <p className="mt-1 text-xs text-danger">{errors.escola}</p>
-          )}
         </div>
 
         <div className="my-6 h-px bg-border" />
@@ -111,13 +103,16 @@ export function Step1Applicant({ data, onChange, errors }: Step1Props) {
         </div>
         <Field
           label="Profissão do pai"
+          required
           value={data.pai_profissao}
           onChange={(v) => updateField("pai_profissao", v)}
+          error={errors.pai_profissao}
+          testId="pai-profissao"
         />
         <div className="mb-5">
           <label className="mb-1.5 block text-[13px] font-medium tracking-wide text-fg">
-            Documento do pai (RG ou CPF){" "}
-            <span className="text-danger">*</span>
+            Documento do pai (RG ou CPF)
+            <RequiredMark />
           </label>
           <FileUpload
             label="para enviar foto do RG ou CPF do pai"
@@ -151,14 +146,17 @@ export function Step1Applicant({ data, onChange, errors }: Step1Props) {
           />
           <Field
             label="Profissão da mãe"
+            required
             value={data.mae_profissao}
             onChange={(v) => updateField("mae_profissao", v)}
+            error={errors.mae_profissao}
+            testId="mae-profissao"
           />
         </div>
         <div className="mb-5">
           <label className="mb-1.5 block text-[13px] font-medium tracking-wide text-fg">
-            Documento da mãe (RG ou CPF){" "}
-            <span className="text-danger">*</span>
+            Documento da mãe (RG ou CPF)
+            <RequiredMark />
           </label>
           <FileUpload
             label="para enviar foto do RG ou CPF da mãe"
@@ -174,13 +172,15 @@ export function Step1Applicant({ data, onChange, errors }: Step1Props) {
 
         <div className="mb-5">
           <label className="mb-1.5 block text-[13px] font-medium tracking-wide text-fg">
-            Certidão de Casamento
+            Certidão de Casamento<RequiredMark />
           </label>
           <FileUpload
             label="para enviar a Certidão de Casamento"
             category="certidao"
             files={data.certidao_casamento}
             onChange={(f) => updateFiles("certidao_casamento", f)}
+            required
+            error={errors.certidao_casamento}
           />
         </div>
 
@@ -197,9 +197,12 @@ export function Step1Applicant({ data, onChange, errors }: Step1Props) {
         <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
           <Field
             label="CEP"
+            required
             value={data.cep}
             onChange={(v) => updateField("cep", v)}
+            error={errors.cep}
             placeholder="00000-000"
+            testId="cep"
           />
           <Field
             label="Telefone"
@@ -213,15 +216,18 @@ export function Step1Applicant({ data, onChange, errors }: Step1Props) {
         </div>
         <Field
           label="E-mail"
+          required
           type="email"
           value={data.email}
           onChange={(v) => updateField("email", v)}
+          error={errors.email}
           placeholder="exemplo@email.com"
+          testId="email"
         />
 
         <div className="mb-5">
           <label className="mb-1.5 block text-[13px] font-medium tracking-wide text-fg">
-            Comprovante de Endereço <span className="text-danger">*</span>
+            Comprovante de Endereço<RequiredMark />
           </label>
           <FileUpload
             label="para enviar comprovante de endereço"
@@ -239,47 +245,70 @@ export function Step1Applicant({ data, onChange, errors }: Step1Props) {
           Outros Filhos
         </h2>
         <p className="mb-6 text-sm text-muted">
-          Informe nome e data de nascimento dos demais filhos que não estão na
-          escola.
+          Informe os demais filhos que não estão na escola. Ao adicionar um
+          filho, nome, CPF e data de nascimento são obrigatórios.
         </p>
 
+        {data.outros_filhos.length > 0 && (
+          <div className="mb-2 grid grid-cols-[1fr_160px_140px_32px] gap-2.5 text-[11px] font-medium uppercase tracking-widest text-muted max-sm:hidden">
+            <span>
+              Nome completo<RequiredMark />
+            </span>
+            <span>
+              CPF<RequiredMark />
+            </span>
+            <span>
+              Nascimento<RequiredMark />
+            </span>
+            <span />
+          </div>
+        )}
+
         <div data-testid="filhos-list">
-          {data.outros_filhos.map((child, i) => (
-            <div
-              key={i}
-              className="mb-2.5 grid grid-cols-[1fr_160px_140px_32px] items-start gap-2.5 max-sm:grid-cols-1"
-            >
-              <input
-                type="text"
-                placeholder="Nome completo"
-                value={child.nome}
-                onChange={(e) => updateChild(i, "nome", e.target.value)}
-                className="w-full rounded-md border border-border bg-bg px-3 py-2.5 text-[15px] text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
-              />
-              <input
-                type="text"
-                placeholder="000.000.000-00"
-                value={child.cpf}
-                onChange={(e) => updateChild(i, "cpf", e.target.value)}
-                className="w-full rounded-md border border-border bg-bg px-3 py-2.5 text-[15px] text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
-              />
-              <input
-                type="date"
-                value={child.nascimento}
-                onChange={(e) => updateChild(i, "nascimento", e.target.value)}
-                className="w-full rounded-md border border-border bg-bg px-3 py-2.5 text-[15px] text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
-              />
-              <button
-                type="button"
-                onClick={() => removeChild(i)}
-                className="grid h-9 w-9 place-items-center rounded-md border border-border bg-surface text-lg text-muted transition-colors hover:border-danger hover:text-danger"
-                title="Remover"
-                data-testid="remove-child"
-              >
-                &times;
-              </button>
-            </div>
-          ))}
+          {data.outros_filhos.map((child, i) => {
+            const nomeError = errors[`filho_${i}_nome`];
+            const cpfError = errors[`filho_${i}_cpf`];
+            const nascError = errors[`filho_${i}_nascimento`];
+            return (
+              <div key={i} className="mb-2.5">
+                <div className="grid grid-cols-[1fr_160px_140px_32px] items-start gap-2.5 max-sm:grid-cols-1">
+                  <input
+                    type="text"
+                    placeholder="Nome completo"
+                    value={child.nome}
+                    onChange={(e) => updateChild(i, "nome", e.target.value)}
+                    className={`w-full rounded-md border px-3 py-2.5 text-[15px] text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 ${fieldBorder(!!nomeError)}`}
+                    data-testid={`filho-nome-${i}`}
+                  />
+                  <input
+                    type="text"
+                    placeholder="CPF"
+                    value={child.cpf}
+                    onChange={(e) => updateChild(i, "cpf", e.target.value)}
+                    className={`w-full rounded-md border px-3 py-2.5 text-[15px] text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 ${fieldBorder(!!cpfError)}`}
+                    data-testid={`filho-cpf-${i}`}
+                  />
+                  <input
+                    type="date"
+                    value={child.nascimento}
+                    onChange={(e) => updateChild(i, "nascimento", e.target.value)}
+                    className={`w-full rounded-md border px-3 py-2.5 text-[15px] text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 ${fieldBorder(!!nascError)}`}
+                    data-testid={`filho-nascimento-${i}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeChild(i)}
+                    className="grid h-9 w-9 place-items-center rounded-md border border-border bg-surface text-lg text-muted transition-colors hover:border-danger hover:text-danger"
+                    title="Remover"
+                    data-testid="remove-child"
+                  >
+                    &times;
+                  </button>
+                </div>
+                <FieldError error={nomeError || cpfError || nascError} />
+              </div>
+            );
+          })}
         </div>
         <button
           type="button"
@@ -316,17 +345,18 @@ function Field({
   return (
     <div className="mb-5">
       <label className="mb-1.5 block text-[13px] font-medium tracking-wide text-fg">
-        {label} {required && <span className="text-danger">*</span>}
+        {label}
+        {required && <RequiredMark />}
       </label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full rounded-md border bg-bg px-3.5 py-2.5 text-[15px] text-fg outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20 ${error ? "border-danger" : "border-border"}`}
+        className={`w-full rounded-md border px-3.5 py-2.5 text-[15px] text-fg outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20 ${fieldBorder(!!error)}`}
         data-testid={testId}
       />
-      {error && <p className="mt-1 text-xs text-danger">{error}</p>}
+      <FieldError error={error} />
     </div>
   );
 }

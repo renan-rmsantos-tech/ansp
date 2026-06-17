@@ -70,7 +70,7 @@ export function SchoolYearForm({ onCreated }: SchoolYearFormProps) {
       className="rounded-lg border border-border bg-surface p-4"
       data-testid="school-year-form"
     >
-      <h3 className="font-heading text-sm font-semibold text-fg">
+      <h3 className="text-sm font-semibold text-fg">
         Novo Ano Letivo
       </h3>
       <div className="mt-3 grid gap-3 sm:grid-cols-3">

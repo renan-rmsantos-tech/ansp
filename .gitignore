@@ -15,9 +15,24 @@
 # production
 /build
 
-# misc
+# OS
 .DS_Store
+Thumbs.db
 *.pem
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Supabase local
+supabase/.temp/
+supabase/.branches/
+
+# Docker
+docker/data/
 
 # debug
 npm-debug.log*

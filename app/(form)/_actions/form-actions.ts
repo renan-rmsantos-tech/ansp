@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import {
   applicationSubmissionSchema,
   type ApplicationSubmission,
@@ -79,7 +79,9 @@ export async function submitApplication(
   }
 
   const data = result.data;
-  const supabase = await createClient();
+  // Server action confiável: usa service role para persistir a solicitação
+  // (o papel anon só tem INSERT; o .select() após insert exige leitura).
+  const supabase = createServiceClient();
 
   const { data: activeYear, error: yearError } = await supabase
     .from("school_years")
@@ -158,7 +160,7 @@ export async function submitApplication(
     };
   }
 
-  const promises: Promise<unknown>[] = [];
+  const promises: PromiseLike<unknown>[] = [];
 
   if (data.outros_filhos.length > 0) {
     promises.push(
@@ -212,13 +214,13 @@ export async function submitApplication(
   }
 
   const documentRows = collectDocumentRows(data, appId, insertedStudents ?? []);
+  await moveFilesToApplication(supabase, documentRows, appId);
+
   if (documentRows.length > 0) {
     promises.push(supabase.from("documents").insert(documentRows));
   }
 
   await Promise.all(promises);
-
-  await moveFilesToApplication(supabase, documentRows, appId);
 
   return { success: true, id: appId };
 }

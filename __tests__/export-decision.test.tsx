@@ -4,9 +4,11 @@ import { render, screen, fireEvent, cleanup, act } from "@testing-library/react"
 const {
   mockGetApplicationDetail,
   mockExportDecision,
+  mockExportContract,
 } = vi.hoisted(() => ({
   mockGetApplicationDetail: vi.fn(),
   mockExportDecision: vi.fn(),
+  mockExportContract: vi.fn(),
 }));
 
 vi.mock("@/app/admin/_actions/admin-actions", () => ({
@@ -14,10 +16,14 @@ vi.mock("@/app/admin/_actions/admin-actions", () => ({
   approveApplication: vi.fn(),
   rejectApplication: vi.fn(),
   exportDecision: mockExportDecision,
+  exportContract: mockExportContract,
   getDocumentUrl: vi.fn(),
 }));
 
 import { ApplicationCard, type ApplicationSummary } from "@/app/admin/_components/application-card";
+
+// base64 de "PDF"
+const PDF_BASE64 = Buffer.from("PDF").toString("base64");
 
 function makeDecidedApp(): ApplicationSummary {
   return {
@@ -37,67 +43,52 @@ function makeDecidedApp(): ApplicationSummary {
   };
 }
 
-describe("Export Decision", () => {
-  afterEach(cleanup);
-  beforeEach(() => vi.clearAllMocks());
-
-  it("export button triggers file download with correct filename", async () => {
-    const app = makeDecidedApp();
-    const detail = { ...app, other_children: [], vehicles: [], collaboration: null, benefactors: [], documents: [] };
-    mockGetApplicationDetail.mockResolvedValueOnce({ data: detail });
-    mockExportDecision.mockResolvedValueOnce({
-      content: "Decisão de aprovação para João Silva",
-      filename: "decisao_aprovacao_João_Silva.txt",
-    });
-
-    const mockCreateObjectURL = vi.fn(() => "blob:mock-url");
-    const mockRevokeObjectURL = vi.fn();
-    global.URL.createObjectURL = mockCreateObjectURL;
-    global.URL.revokeObjectURL = mockRevokeObjectURL;
-
-    const mockClick = vi.fn();
-    const originalCreateElement = document.createElement.bind(document);
-    vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
-      const el = originalCreateElement(tag);
-      if (tag === "a") {
-        el.click = mockClick;
-      }
-      return el;
-    });
-
-    render(<ApplicationCard application={app} onDecision={vi.fn()} />);
-
-    await act(async () => {
-      fireEvent.click(screen.getByTestId("card-toggle"));
-    });
-
-    const exportButton = screen.getByTestId("export-button");
-    expect(exportButton).toBeDefined();
-    expect(exportButton.textContent).toBe("Exportar Decisão");
-
-    await act(async () => {
-      fireEvent.click(exportButton);
-    });
-
-    expect(mockExportDecision).toHaveBeenCalledWith("app-1");
-    expect(mockCreateObjectURL).toHaveBeenCalled();
-    expect(mockClick).toHaveBeenCalled();
-    expect(mockRevokeObjectURL).toHaveBeenCalled();
-
-    vi.restoreAllMocks();
+async function openExportPreview() {
+  const app = makeDecidedApp();
+  const detail = {
+    ...app,
+    other_children: [],
+    vehicles: [],
+    collaboration: null,
+    benefactors: [],
+    documents: [],
+  };
+  mockGetApplicationDetail.mockResolvedValueOnce({ data: detail });
+  mockExportDecision.mockResolvedValueOnce({
+    pdfBase64: PDF_BASE64,
+    filename: "decisao_aprovacao_João_Silva.pdf",
   });
 
-  it("export generates .txt content with correctly replaced tokens", async () => {
-    const app = makeDecidedApp();
-    const detail = { ...app, other_children: [], vehicles: [], collaboration: null, benefactors: [], documents: [] };
-    mockGetApplicationDetail.mockResolvedValueOnce({ data: detail });
-    mockExportDecision.mockResolvedValueOnce({
-      content: "Prezado João Silva e Maria Silva,\n\nAluno(s): Pedro Silva\nDesconto: 40%\n\nColégio São José - 2026",
-      filename: "decisao_aprovacao_João_Silva.txt",
-    });
+  global.URL.createObjectURL = vi.fn(() => "blob:mock-url");
+  global.URL.revokeObjectURL = vi.fn();
 
-    global.URL.createObjectURL = vi.fn(() => "blob:mock-url");
-    global.URL.revokeObjectURL = vi.fn();
+  render(<ApplicationCard application={app} onDecision={vi.fn()} />);
+
+  await act(async () => {
+    fireEvent.click(screen.getByTestId("export-button"));
+  });
+}
+
+describe("Export Decision", () => {
+  afterEach(() => {
+    cleanup();
+    vi.restoreAllMocks();
+  });
+  beforeEach(() => vi.clearAllMocks());
+
+  it("clicking export opens a PDF preview with print and download options", async () => {
+    await openExportPreview();
+
+    expect(mockExportDecision).toHaveBeenCalledWith("app-1");
+    expect(screen.getByTestId("pdf-preview-modal")).toBeDefined();
+    expect(screen.getByTestId("pdf-preview-frame")).toBeDefined();
+    expect(screen.getByTestId("pdf-print-button")).toBeDefined();
+    expect(screen.getByTestId("pdf-download-button")).toBeDefined();
+    // A pré-visualização aponta para o blob do PDF gerado.
+    expect(global.URL.createObjectURL).toHaveBeenCalled();
+  });
+
+  it("download button triggers a download with the .pdf filename", async () => {
     const mockClick = vi.fn();
     const originalCreateElement = document.createElement.bind(document);
     vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
@@ -106,19 +97,63 @@ describe("Export Decision", () => {
       return el;
     });
 
+    await openExportPreview();
+
+    const downloadButton = screen.getByTestId("pdf-download-button");
+    await act(async () => {
+      fireEvent.click(downloadButton);
+    });
+
+    expect(mockClick).toHaveBeenCalled();
+  });
+
+  it("print button asks the preview frame to print", async () => {
+    await openExportPreview();
+
+    const frame = screen.getByTestId("pdf-preview-frame") as HTMLIFrameElement;
+    const mockPrint = vi.fn();
+    Object.defineProperty(frame, "contentWindow", {
+      configurable: true,
+      value: { focus: vi.fn(), print: mockPrint },
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("pdf-print-button"));
+    });
+
+    expect(mockPrint).toHaveBeenCalled();
+  });
+
+  it("preview can be closed", async () => {
+    await openExportPreview();
+
+    expect(screen.queryByTestId("pdf-preview-modal")).not.toBeNull();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("pdf-close-button"));
+    });
+    expect(screen.queryByTestId("pdf-preview-modal")).toBeNull();
+  });
+
+  it("clicking generate contract opens a PDF preview with print and download options", async () => {
+    const app = makeDecidedApp();
+    mockExportContract.mockResolvedValueOnce({
+      pdfBase64: PDF_BASE64,
+      filename: "contrato_Joao_Silva.pdf",
+    });
+
+    global.URL.createObjectURL = vi.fn(() => "blob:mock-url");
+    global.URL.revokeObjectURL = vi.fn();
+
     render(<ApplicationCard application={app} onDecision={vi.fn()} />);
 
     await act(async () => {
-      fireEvent.click(screen.getByTestId("card-toggle"));
-    });
-    await act(async () => {
-      fireEvent.click(screen.getByTestId("export-button"));
+      fireEvent.click(screen.getByTestId("contract-button"));
     });
 
-    const blobArg = (global.URL.createObjectURL as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(blobArg).toBeInstanceOf(Blob);
-    expect(blobArg.type).toBe("text/plain;charset=utf-8");
-
-    vi.restoreAllMocks();
+    expect(mockExportContract).toHaveBeenCalledWith("app-1");
+    expect(screen.getByTestId("pdf-preview-modal")).toBeInTheDocument();
+    expect(screen.getByTestId("pdf-print-button")).toBeInTheDocument();
+    expect(screen.getByTestId("pdf-download-button")).toBeInTheDocument();
+    expect(screen.getByText("Contrato")).toBeInTheDocument();
   });
 });

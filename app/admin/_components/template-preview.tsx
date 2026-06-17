@@ -35,7 +35,7 @@ export function TemplatePreview({
       className="rounded-lg border border-border bg-cream p-6"
       data-testid="template-preview"
     >
-      <h3 className="mb-3 font-heading text-sm font-semibold text-fg">
+      <h3 className="mb-3 text-sm font-semibold text-fg">
         Pré-visualização
       </h3>
       <div className="whitespace-pre-wrap font-body text-sm leading-relaxed text-fg">

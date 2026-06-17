@@ -11,6 +11,7 @@ const mockSupabase = {
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(() => Promise.resolve(mockSupabase)),
+  createServiceClient: vi.fn(() => mockSupabase),
 }));
 
 vi.mock("crypto", async () => {

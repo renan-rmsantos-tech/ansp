@@ -12,7 +12,7 @@ describe(".env.example", () => {
     expect(envContent).toContain("NEXT_PUBLIC_SUPABASE_URL");
   });
 
-  it("contains NEXT_PUBLIC_SUPABASE_ANON_KEY", () => {
-    expect(envContent).toContain("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  it("contains NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", () => {
+    expect(envContent).toContain("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
   });
 });

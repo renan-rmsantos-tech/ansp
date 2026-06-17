@@ -1,11 +1,50 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { replaceTokens, type TokenData } from "@/lib/templates/token-replacer";
+import {
+  replaceContractTokens,
+  formatDataExtenso,
+  type ContractClause,
+  type ContractTokenData,
+} from "@/lib/templates/contract-tokens";
 
 type ActionResult = { success: boolean; error?: string };
 
+const DEV_USER = {
+  id: "00000000-0000-0000-0000-000000000000",
+  email: "admin@admin.com",
+};
+
+function isDevBypass() {
+  return (
+    process.env.NODE_ENV === "development" &&
+    process.env.AUTH_BYPASS === "true"
+  );
+}
+
+function resolveDecidedBy(userId: string): string | null {
+  // Dev bypass uses a placeholder UUID that does not exist in auth.users.
+  if (isDevBypass() && userId === DEV_USER.id) {
+    return null;
+  }
+  return userId;
+}
+
 async function requireAuth() {
+  if (isDevBypass()) {
+    const cookieStore = await cookies();
+    const devAuth = cookieStore.get("dev-auth")?.value;
+    if (devAuth !== "true") {
+      throw new Error("Não autorizado. Faça login para continuar.");
+    }
+    // Sem sessão real, o papel no Postgres seria `anon` e a RLS bloquearia
+    // as escritas admin. A service_role ignora RLS (uso server-only).
+    const supabase = createServiceClient();
+    return { supabase, user: DEV_USER };
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -88,20 +127,36 @@ export async function getApplicationDetail(id: string) {
 
 // --- Document URL ---
 
+function resolveDocumentPaths(path: string, applicationId?: string): string[] {
+  const paths = [path];
+
+  if (path.startsWith("pending/") && applicationId) {
+    const rest = path.replace(/^pending\/[^/]+\//, "");
+    if (rest) {
+      paths.push(`applications/${applicationId}/${rest}`);
+    }
+  }
+
+  return paths;
+}
+
 export async function getDocumentUrl(
-  path: string
+  path: string,
+  applicationId?: string
 ): Promise<{ url: string } | { error: string }> {
   const { supabase } = await requireAuth();
 
-  const { data, error } = await supabase.storage
-    .from("documents")
-    .createSignedUrl(path, 300);
+  for (const candidate of resolveDocumentPaths(path, applicationId)) {
+    const { data, error } = await supabase.storage
+      .from("documents")
+      .createSignedUrl(candidate, 300);
 
-  if (error || !data) {
-    return { error: "Erro ao gerar URL do documento." };
+    if (!error && data?.signedUrl) {
+      return { url: data.signedUrl };
+    }
   }
 
-  return { url: data.signedUrl };
+  return { error: "Erro ao gerar URL do documento." };
 }
 
 // --- Decisions ---
@@ -124,7 +179,7 @@ export async function approveApplication(
       desconto_concedido: desconto,
       motivo: motivo || null,
       data_decisao: new Date().toISOString(),
-      decided_by: user.id,
+      decided_by: resolveDecidedBy(user.id),
     })
     .eq("id", id);
 
@@ -147,7 +202,7 @@ export async function rejectApplication(
       status: "rejeitada",
       motivo: motivo || null,
       data_decisao: new Date().toISOString(),
-      decided_by: user.id,
+      decided_by: resolveDecidedBy(user.id),
     })
     .eq("id", id);
 
@@ -305,7 +360,7 @@ export async function saveTemplate(input: {
 
 export async function exportDecision(
   id: string
-): Promise<{ content: string; filename: string } | { error: string }> {
+): Promise<{ pdfBase64: string; filename: string } | { error: string }> {
   const { supabase } = await requireAuth();
 
   const { data: app, error: appError } = await supabase
@@ -350,13 +405,161 @@ export async function exportDecision(
     ano_letivo: app.school_years?.nome ?? "",
   };
 
-  const fullTemplate = [template.cabecalho, template.corpo, template.rodape].join(
-    "\n\n"
-  );
-  const content = replaceTokens(fullTemplate, tokenData);
+  const resolved = {
+    titulo: `Decisão - ${app.escola}`,
+    cabecalho: replaceTokens(template.cabecalho, tokenData),
+    corpo: replaceTokens(template.corpo, tokenData),
+    rodape: replaceTokens(template.rodape, tokenData),
+  };
+
+  const { renderDecisionPdf } = await import("@/lib/pdf/decision-pdf");
+  const pdf = await renderDecisionPdf(resolved);
 
   const safeNome = app.pai_nome.replace(/[^a-zA-Z0-9À-ú ]/g, "").replace(/\s+/g, "_");
-  const filename = `decisao_${templateTipo}_${safeNome}.txt`;
+  const filename = `decisao_${templateTipo}_${safeNome}.pdf`;
 
-  return { content, filename };
+  return { pdfBase64: pdf.toString("base64"), filename };
+}
+
+// --- Contract Template ---
+
+export interface ContractTemplate {
+  id: string;
+  titulo: string;
+  cabecalho: string;
+  clausulas: ContractClause[];
+  rodape: string;
+}
+
+export async function getContractTemplate() {
+  const { supabase } = await requireAuth();
+
+  const { data, error } = await supabase
+    .from("contract_templates")
+    .select("*")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    return { data: null, error: "Erro ao buscar modelo de contrato." };
+  }
+
+  return { data: data as ContractTemplate | null, error: null };
+}
+
+export async function saveContractTemplate(input: {
+  titulo: string;
+  cabecalho: string;
+  clausulas: ContractClause[];
+  rodape: string;
+}): Promise<ActionResult> {
+  const { supabase } = await requireAuth();
+
+  const { data: existing } = await supabase
+    .from("contract_templates")
+    .select("id")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const payload = {
+    titulo: input.titulo,
+    cabecalho: input.cabecalho,
+    clausulas: input.clausulas,
+    rodape: input.rodape,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (existing) {
+    const { error } = await supabase
+      .from("contract_templates")
+      .update(payload)
+      .eq("id", existing.id);
+
+    if (error) {
+      return { success: false, error: "Erro ao atualizar modelo de contrato." };
+    }
+  } else {
+    const { error } = await supabase.from("contract_templates").insert(payload);
+
+    if (error) {
+      return { success: false, error: "Erro ao criar modelo de contrato." };
+    }
+  }
+
+  return { success: true };
+}
+
+// Formata 'YYYY-MM-DD' como 'DD/MM/YYYY' sem depender de fuso horário.
+function formatDateBR(isoDate: string): string {
+  const [y, m, d] = isoDate.split("-");
+  return d && m && y ? `${d}/${m}/${y}` : isoDate;
+}
+
+// --- Contract Export (PDF) ---
+
+export async function exportContract(
+  id: string
+): Promise<{ pdfBase64: string; filename: string } | { error: string }> {
+  const { supabase } = await requireAuth();
+
+  const { data: app, error: appError } = await supabase
+    .from("applications")
+    .select("*, students(*), school_years!inner(nome, data_inicio, data_fim)")
+    .eq("id", id)
+    .single();
+
+  if (appError || !app) {
+    return { error: "Solicitação não encontrada." };
+  }
+
+  if (app.status !== "aprovada") {
+    return {
+      error: "O contrato só pode ser gerado para solicitações aprovadas.",
+    };
+  }
+
+  const { data: template, error: templateError } = await getContractTemplate();
+
+  if (templateError || !template) {
+    return { error: "Modelo de contrato não encontrado." };
+  }
+
+  const tokenData: ContractTokenData = {
+    aluno: (app.students ?? []).map((s: { nome: string }) => s.nome).join(", "),
+    nome_responsavel: app.pai_nome,
+    rg_responsavel: app.pai_rg ?? "",
+    cpf_responsavel: app.pai_cpf ?? "",
+    endereco: app.cep ? `${app.endereco}, CEP ${app.cep}` : app.endereco,
+    desconto: app.desconto_concedido?.toString() ?? "0",
+    ano_letivo: app.school_years?.nome ?? "",
+    data_inicio: app.school_years?.data_inicio
+      ? formatDateBR(app.school_years.data_inicio)
+      : "",
+    data_termino: app.school_years?.data_fim
+      ? formatDateBR(app.school_years.data_fim)
+      : "",
+    data_extenso: formatDataExtenso(new Date()),
+  };
+
+  const resolved = {
+    titulo: replaceContractTokens(template.titulo, tokenData),
+    cabecalho: replaceContractTokens(template.cabecalho, tokenData),
+    clausulas: (template.clausulas ?? []).map((c) => ({
+      titulo: replaceContractTokens(c.titulo, tokenData),
+      corpo: replaceContractTokens(c.corpo, tokenData),
+    })),
+    rodape: replaceContractTokens(template.rodape, tokenData),
+  };
+
+  const { renderContractPdf } = await import("@/lib/pdf/contract-pdf");
+  const pdf = await renderContractPdf(resolved);
+
+  const safeNome = app.pai_nome
+    .replace(/[^a-zA-Z0-9À-ú ]/g, "")
+    .replace(/\s+/g, "_");
+  const filename = `contrato_${safeNome}.pdf`;
+
+  return { pdfBase64: pdf.toString("base64"), filename };
 }

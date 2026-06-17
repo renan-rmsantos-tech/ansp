@@ -25,7 +25,6 @@ describe("Step1Applicant", () => {
 
   it("renders all required parent fields", () => {
     renderStep1();
-    expect(screen.getByTestId("escola-select")).toBeInTheDocument();
     expect(screen.getByTestId("pai-nome")).toBeInTheDocument();
     expect(screen.getByTestId("pai-rg")).toBeInTheDocument();
     expect(screen.getByTestId("pai-cpf")).toBeInTheDocument();
@@ -41,12 +40,13 @@ describe("Step1Applicant", () => {
     expect(screen.getByText("Outros Filhos")).toBeInTheDocument();
   });
 
-  it("updates escola on change", () => {
-    const { onChange } = renderStep1();
-    fireEvent.change(screen.getByTestId("escola-select"), {
-      target: { value: "colegio_sao_jose" },
-    });
-    expect(onChange).toHaveBeenCalledWith({ escola: "colegio_sao_jose" });
+  it("shows escola fixed to Colégio São José and not editable", () => {
+    renderStep1();
+    const select = screen.getByTestId("escola-select") as HTMLSelectElement;
+    expect(select).toBeInTheDocument();
+    expect(select).toBeDisabled();
+    expect(select.value).toBe("Colégio São José");
+    expect(INITIAL_FORM_DATA.escola).toBe("Colégio São José");
   });
 
   it("updates pai_nome on change", () => {
@@ -83,8 +83,9 @@ describe("Step1Applicant", () => {
     const { onChange } = renderStep1({
       outros_filhos: [{ nome: "", cpf: "", nascimento: "" }],
     });
-    const inputs = screen.getAllByPlaceholderText("Nome completo");
-    fireEvent.change(inputs[0], { target: { value: "Ana" } });
+    fireEvent.change(screen.getByTestId("filho-nome-0"), {
+      target: { value: "Ana" },
+    });
     expect(onChange).toHaveBeenCalledWith({
       outros_filhos: [{ nome: "Ana", cpf: "", nascimento: "" }],
     });

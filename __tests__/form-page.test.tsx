@@ -25,7 +25,7 @@ describe("FormPage (enrollment check)", () => {
     mockGetActiveSchoolYear.mockResolvedValue({ open: false });
     const page = await FormPage();
     render(page);
-    expect(screen.getByText("Inscrições Encerradas")).toBeInTheDocument();
+    expect(screen.getByText("Formulário indisponível")).toBeInTheDocument();
     expect(screen.queryByTestId("scholarship-form")).not.toBeInTheDocument();
   });
 
@@ -43,6 +43,8 @@ describe("FormPage (enrollment check)", () => {
     const page = await FormPage();
     render(page);
     expect(screen.getByTestId("scholarship-form")).toBeInTheDocument();
-    expect(screen.queryByText("Inscrições Encerradas")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Formulário indisponível")
+    ).not.toBeInTheDocument();
   });
 });

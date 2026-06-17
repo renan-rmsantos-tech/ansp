@@ -10,18 +10,24 @@ interface DecisionActionsProps {
   applicationId: string;
   requestedDiscount: number;
   onDecision: (id: string, status: string, desconto_concedido?: number | null) => void;
+  embedded?: boolean;
 }
 
 export function DecisionActions({
   applicationId,
   requestedDiscount,
   onDecision,
+  embedded = false,
 }: DecisionActionsProps) {
   const [mode, setMode] = useState<"idle" | "approve" | "reject">("idle");
   const [discount, setDiscount] = useState(String(requestedDiscount));
   const [reason, setReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const discountId = `discount-${applicationId}`;
+  const reasonId = `reason-${applicationId}`;
+  const outerClass = embedded ? "" : "mt-4";
 
   const handleApprove = useCallback(async () => {
     const discountNum = Number(discount);
@@ -57,7 +63,10 @@ export function DecisionActions({
 
   if (mode === "idle") {
     return (
-      <div className="mt-4 flex gap-2" data-testid="decision-actions">
+      <div className={`${outerClass} flex flex-wrap gap-2`} data-testid="decision-actions">
+        <p className="mb-1 w-full text-sm text-muted">
+          Analise os documentos e dados financeiros antes de decidir.
+        </p>
         <button
           type="button"
           onClick={() => setMode("approve")}
@@ -80,20 +89,26 @@ export function DecisionActions({
 
   return (
     <div
-      className="mt-4 rounded-lg border border-border bg-cream p-4"
+      className={`${outerClass} rounded-lg border border-border bg-cream p-4`}
       data-testid={mode === "approve" ? "approve-form" : "reject-form"}
     >
-      <h4 className="font-heading text-sm font-semibold text-fg">
+      <h4 className="text-sm font-semibold text-fg">
         {mode === "approve" ? "Aprovar Solicitação" : "Rejeitar Solicitação"}
       </h4>
 
+      {mode === "reject" && (
+        <p className="mt-2 text-sm text-danger">
+          Esta ação é definitiva. A família será notificada da rejeição.
+        </p>
+      )}
+
       {mode === "approve" && (
         <div className="mt-3">
-          <label htmlFor="discount" className="block text-sm text-muted">
+          <label htmlFor={discountId} className="block text-sm text-muted">
             Desconto (%)
           </label>
           <input
-            id="discount"
+            id={discountId}
             type="number"
             min="0"
             max="100"
@@ -106,11 +121,11 @@ export function DecisionActions({
       )}
 
       <div className="mt-3">
-        <label htmlFor="reason" className="block text-sm text-muted">
+        <label htmlFor={reasonId} className="block text-sm text-muted">
           Motivo (opcional)
         </label>
         <textarea
-          id="reason"
+          id={reasonId}
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           rows={2}
@@ -137,7 +152,11 @@ export function DecisionActions({
           }`}
           data-testid="confirm-decision"
         >
-          {submitting ? "Processando..." : "Confirmar"}
+          {submitting
+            ? "Processando..."
+            : mode === "approve"
+              ? "Confirmar aprovação"
+              : "Confirmar rejeição"}
         </button>
         <button
           type="button"

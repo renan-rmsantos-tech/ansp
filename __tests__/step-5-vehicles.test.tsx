@@ -51,45 +51,29 @@ describe("Step5Vehicles", () => {
     const { onChange } = renderStep5({
       veiculos: [{ marca: "", modelo: "", ano: "" }],
     });
-    const inputs = screen.getAllByPlaceholderText("Marca");
-    fireEvent.change(inputs[0], { target: { value: "Toyota" } });
+    fireEvent.change(screen.getByTestId("veiculo-marca-0"), {
+      target: { value: "Toyota" },
+    });
     expect(onChange).toHaveBeenCalled();
   });
 
-  it("renders collaboration checkboxes", () => {
+  it("shows vehicle validation errors when provided", () => {
+    render(
+      <Step5Vehicles
+        data={{ ...INITIAL_FORM_DATA, veiculos: [{ marca: "", modelo: "", ano: "" }] }}
+        onChange={vi.fn()}
+        errors={{ veiculo_0_marca: "Marca obrigatória" }}
+      />
+    );
+    expect(screen.getByText("Marca obrigatória")).toBeInTheDocument();
+    expect(screen.getByTestId("veiculo-marca-0")).toHaveClass("border-danger");
+  });
+
+  it("does not render the Colaboração Voluntária section", () => {
     renderStep5();
-    expect(screen.getByLabelText("Limpeza")).toBeInTheDocument();
-    expect(screen.getByLabelText("Mutirão")).toBeInTheDocument();
-    expect(screen.getByLabelText("Arrecadação")).toBeInTheDocument();
-    expect(screen.getByLabelText("Buscar benfeitores")).toBeInTheDocument();
-  });
-
-  it("toggles limpeza and shows vezes_semana input", () => {
-    const { onChange } = renderStep5();
-    fireEvent.click(screen.getByLabelText("Limpeza"));
-    expect(onChange).toHaveBeenCalledWith({
-      colaboracao: expect.objectContaining({ limpeza: true }),
-    });
-  });
-
-  it("shows vezes_semana input when limpeza is active", () => {
-    renderStep5({
-      colaboracao: {
-        ...INITIAL_FORM_DATA.colaboracao,
-        limpeza: true,
-      },
-    });
-    expect(screen.getByPlaceholderText("Vezes por semana")).toBeInTheDocument();
-  });
-
-  it("toggles mutirao and shows sabados input when active", () => {
-    renderStep5({
-      colaboracao: {
-        ...INITIAL_FORM_DATA.colaboracao,
-        mutirao: true,
-      },
-    });
-    expect(screen.getByPlaceholderText("Sábados por mês")).toBeInTheDocument();
+    expect(screen.queryByText("Colaboração Voluntária")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("colaboracao")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Limpeza")).not.toBeInTheDocument();
   });
 
   it("renders 10 benefactor rows", () => {
@@ -115,58 +99,20 @@ describe("Step5Vehicles", () => {
     expect(onChange).toHaveBeenCalled();
   });
 
-  it("updates colaboracao outros text field", () => {
-    const { onChange } = renderStep5();
-    const outrosInput = screen.getByLabelText("Outros:");
-    fireEvent.change(outrosInput, { target: { value: "Cozinha" } });
-    expect(onChange).toHaveBeenCalledWith({
-      colaboracao: expect.objectContaining({ outros: "Cozinha" }),
-    });
+  it("shows benefactor validation errors when provided", () => {
+    const data = { ...INITIAL_FORM_DATA };
+    render(
+      <Step5Vehicles
+        data={data}
+        onChange={vi.fn()}
+        errors={{
+          benfeitor_0_nome: "Nome obrigatório",
+          benfeitor_0_email: "E-mail inválido",
+        }}
+      />
+    );
+    expect(screen.getByText("Nome obrigatório")).toBeInTheDocument();
+    expect(screen.getByText("E-mail inválido")).toBeInTheDocument();
   });
 
-  it("toggles arrecadacao checkbox", () => {
-    const { onChange } = renderStep5();
-    fireEvent.click(screen.getByLabelText("Arrecadação"));
-    expect(onChange).toHaveBeenCalledWith({
-      colaboracao: expect.objectContaining({ arrecadacao: true }),
-    });
-  });
-
-  it("toggles benfeitores checkbox", () => {
-    const { onChange } = renderStep5();
-    fireEvent.click(screen.getByLabelText("Buscar benfeitores"));
-    expect(onChange).toHaveBeenCalledWith({
-      colaboracao: expect.objectContaining({ benfeitores: true }),
-    });
-  });
-
-  it("updates limpeza_vezes_semana when input changes", () => {
-    const { onChange } = renderStep5({
-      colaboracao: {
-        ...INITIAL_FORM_DATA.colaboracao,
-        limpeza: true,
-      },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Vezes por semana"), {
-      target: { value: "3" },
-    });
-    expect(onChange).toHaveBeenCalledWith({
-      colaboracao: expect.objectContaining({ limpeza_vezes_semana: "3" }),
-    });
-  });
-
-  it("updates mutirao_sabados when input changes", () => {
-    const { onChange } = renderStep5({
-      colaboracao: {
-        ...INITIAL_FORM_DATA.colaboracao,
-        mutirao: true,
-      },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Sábados por mês"), {
-      target: { value: "2" },
-    });
-    expect(onChange).toHaveBeenCalledWith({
-      colaboracao: expect.objectContaining({ mutirao_sabados: "2" }),
-    });
-  });
 });

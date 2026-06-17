@@ -12,14 +12,14 @@ export function Topbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between border-b border-border bg-surface px-6 py-3.5">
+    <header className="sticky top-0 z-[var(--z-sticky)] flex items-center justify-between border-b border-border bg-surface px-6 py-3.5">
       <div className="flex items-center gap-3">
         <SealLogo size={32} />
         <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">
           Arca N. S. da Providência
         </span>
         <span className="h-5 w-px bg-border" />
-        <span className="font-heading text-base font-semibold leading-tight tracking-tight">
+        <span className="text-base font-semibold leading-tight tracking-tight">
           Administração
         </span>
       </div>

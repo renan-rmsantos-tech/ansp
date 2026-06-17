@@ -81,15 +81,15 @@ describe("TemplateEditor", () => {
     const tokens = screen.getAllByTestId("token-item");
     expect(tokens).toHaveLength(8);
 
-    const tokenTexts = tokens.map((t) => t.textContent);
-    expect(tokenTexts).toContain("{nome_pai}");
-    expect(tokenTexts).toContain("{nome_mae}");
-    expect(tokenTexts).toContain("{escola}");
-    expect(tokenTexts).toContain("{aluno}");
-    expect(tokenTexts).toContain("{desconto}");
-    expect(tokenTexts).toContain("{data}");
-    expect(tokenTexts).toContain("{motivo}");
-    expect(tokenTexts).toContain("{ano_letivo}");
+    const tokenTexts = tokens.map((t) => t.textContent ?? "");
+    expect(tokenTexts.some((t) => t.includes("{nome_pai}"))).toBe(true);
+    expect(tokenTexts.some((t) => t.includes("{nome_mae}"))).toBe(true);
+    expect(tokenTexts.some((t) => t.includes("{escola}"))).toBe(true);
+    expect(tokenTexts.some((t) => t.includes("{aluno}"))).toBe(true);
+    expect(tokenTexts.some((t) => t.includes("{desconto}"))).toBe(true);
+    expect(tokenTexts.some((t) => t.includes("{data}"))).toBe(true);
+    expect(tokenTexts.some((t) => t.includes("{motivo}"))).toBe(true);
+    expect(tokenTexts.some((t) => t.includes("{ano_letivo}"))).toBe(true);
   });
 
   it("saves template and shows success message", async () => {

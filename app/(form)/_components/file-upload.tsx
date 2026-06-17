@@ -123,7 +123,7 @@ export function FileUpload({
           dragOver
             ? "border-gold bg-gold/10"
             : error
-              ? "border-danger"
+              ? "border-danger bg-danger/5"
               : "border-border hover:border-gold hover:bg-gold/5"
         }`}
         onDragEnter={(e) => {
@@ -189,7 +189,11 @@ export function FileUpload({
         </div>
       )}
 
-      {error && <p className="text-xs text-danger">{error}</p>}
+      {error && (
+        <p className="mt-1 text-xs font-medium text-danger" role="alert">
+          {error}
+        </p>
+      )}
       {required && files.length === 0 && !error && (
         <span className="sr-only">Obrigatório</span>
       )}

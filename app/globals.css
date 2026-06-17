@@ -55,6 +55,12 @@
   --sidebar-accent-foreground: oklch(22% 0.06 250);
   --sidebar-border: oklch(90% 0.008 85);
   --sidebar-ring: oklch(25% 0.06 250);
+
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-modal-backdrop: 40;
+  --z-modal: 50;
+  --z-fab: 50;
 }
 
 body {
@@ -103,6 +109,20 @@ body {
 
 .animate-shake {
   animation: shake 0.4s ease;
+}
+
+.admin-modal {
+  z-index: var(--z-modal);
+}
+
+.admin-modal::backdrop {
+  z-index: var(--z-modal-backdrop);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-modal {
+    animation: none;
+  }
 }
 
 @layer base {

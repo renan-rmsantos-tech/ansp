@@ -92,25 +92,33 @@ export function TemplateEditor({ initialTemplates }: TemplateEditorProps) {
         className="mb-4 rounded-lg border border-border bg-cream p-4"
         data-testid="token-reference"
       >
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
+        <h3 className="mb-2 text-sm font-medium text-muted">
           Tokens disponíveis
         </h3>
-        <div className="flex flex-wrap gap-2">
+        <p className="mb-3 text-xs text-muted">
+          Copie e cole no texto. Cada token será substituído pelos dados da solicitação.
+        </p>
+        <ul className="grid gap-2 sm:grid-cols-2">
           {AVAILABLE_TOKENS.map((t) => (
-            <span
+            <li
               key={t.token}
-              className="inline-flex items-center gap-1 rounded-md bg-bg px-2 py-1 text-xs font-mono text-fg"
-              title={t.desc}
+              className="flex items-start gap-2 rounded-md bg-bg px-2 py-1.5 text-xs"
               data-testid="token-item"
             >
-              {t.token}
-            </span>
+              <code className="shrink-0 font-mono text-fg">{t.token}</code>
+              <span className="text-muted">{t.desc}</span>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-border" data-testid="template-tabs">
+      <div
+        role="tablist"
+        aria-label="Tipo de modelo"
+        className="flex gap-1 border-b border-border"
+        data-testid="template-tabs"
+      >
         {(["aprovacao", "rejeicao"] as const).map((tab) => (
           <button
             key={tab}
@@ -140,7 +148,7 @@ export function TemplateEditor({ initialTemplates }: TemplateEditorProps) {
           <div>
             <label
               htmlFor="tpl-cabecalho"
-              className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted"
+              className="mb-1 block text-xs font-medium text-muted"
             >
               Cabeçalho
             </label>
@@ -156,7 +164,7 @@ export function TemplateEditor({ initialTemplates }: TemplateEditorProps) {
           <div>
             <label
               htmlFor="tpl-corpo"
-              className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted"
+              className="mb-1 block text-xs font-medium text-muted"
             >
               Corpo
             </label>
@@ -172,7 +180,7 @@ export function TemplateEditor({ initialTemplates }: TemplateEditorProps) {
           <div>
             <label
               htmlFor="tpl-rodape"
-              className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted"
+              className="mb-1 block text-xs font-medium text-muted"
             >
               Rodapé
             </label>

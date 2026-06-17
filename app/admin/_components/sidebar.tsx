@@ -41,6 +41,17 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+  {
+    label: "Modelo de Contrato",
+    href: "/admin/contrato",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-[18px] shrink-0">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <path d="M9 15l2 2 4-4" />
+      </svg>
+    ),
+  },
 ] as const;
 
 export function Sidebar() {
@@ -55,7 +66,7 @@ export function Sidebar() {
         aria-label="Abrir menu"
         aria-expanded={mobileOpen}
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="fixed bottom-4 right-4 z-50 flex size-12 items-center justify-center rounded-full bg-accent text-white shadow-lg md:hidden"
+        className="fixed bottom-4 right-4 z-[var(--z-fab)] flex size-12 items-center justify-center rounded-full border border-border bg-accent text-white md:hidden"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-5">
           {mobileOpen ? (
@@ -76,7 +87,7 @@ export function Sidebar() {
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 md:hidden"
+          className="fixed inset-0 z-[var(--z-modal-backdrop)] bg-[oklch(22%_0.06_250/0.32)] md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -84,13 +95,13 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "sticky top-[53px] h-[calc(100vh-53px)] w-[250px] shrink-0 overflow-y-auto border-r border-border bg-surface py-5",
-          "max-md:fixed max-md:left-0 max-md:top-0 max-md:z-40 max-md:h-full max-md:shadow-lg max-md:transition-transform max-md:duration-200",
+          "sticky top-[53px] z-[var(--z-dropdown)] h-[calc(100vh-53px)] w-[250px] shrink-0 overflow-y-auto border-r border-border bg-surface py-5",
+          "max-md:fixed max-md:left-0 max-md:top-[53px] max-md:z-[var(--z-modal)] max-md:h-[calc(100vh-53px)] max-md:border-r max-md:transition-transform max-md:duration-200 motion-reduce:max-md:transition-none",
           mobileOpen ? "max-md:translate-x-0" : "max-md:-translate-x-full"
         )}
       >
         <div className="px-4">
-          <div className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-muted">
+          <div className="mb-2 px-3 text-xs font-medium text-muted">
             Menu
           </div>
           <nav aria-label="Menu administrativo">

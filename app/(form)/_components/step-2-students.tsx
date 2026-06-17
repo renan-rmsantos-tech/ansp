@@ -4,6 +4,7 @@ import type { FormData, Student } from "./form-types";
 import { SERIES_OPTIONS, parseMoney, formatMoney } from "./form-types";
 import { FileUpload } from "./file-upload";
 import type { UploadedFile } from "./file-upload";
+import { RequiredMark, FieldError, fieldBorder } from "./field-ui";
 import { useMemo } from "react";
 
 interface Step2Props {
@@ -86,7 +87,7 @@ export function Step2Students({ data, onChange, errors }: Step2Props) {
               <div className="mb-4 grid grid-cols-2 gap-3.5 max-sm:grid-cols-1">
                 <div className="col-span-full max-sm:col-span-1">
                   <label className="mb-1 block text-xs font-medium tracking-wide text-muted">
-                    Nome completo do aluno
+                    Nome completo do aluno<RequiredMark />
                   </label>
                   <input
                     type="text"
@@ -95,13 +96,14 @@ export function Step2Students({ data, onChange, errors }: Step2Props) {
                     onChange={(e) =>
                       updateStudent(i, "nome", e.target.value)
                     }
-                    className="w-full rounded-md border border-border bg-bg px-3 py-2.5 text-sm text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+                    className={`w-full rounded-md border px-3 py-2.5 text-sm text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 ${fieldBorder(!!errors[`aluno_${i}_nome`])}`}
                     data-testid={`aluno-nome-${i}`}
                   />
+                  <FieldError error={errors[`aluno_${i}_nome`]} />
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium tracking-wide text-muted">
-                    CPF do aluno
+                    CPF do aluno<RequiredMark />
                   </label>
                   <input
                     type="text"
@@ -110,19 +112,22 @@ export function Step2Students({ data, onChange, errors }: Step2Props) {
                     onChange={(e) =>
                       updateStudent(i, "cpf", e.target.value)
                     }
-                    className="w-full rounded-md border border-border bg-bg px-3 py-2.5 text-sm text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+                    className={`w-full rounded-md border px-3 py-2.5 text-sm text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 ${fieldBorder(!!errors[`aluno_${i}_cpf`])}`}
+                    data-testid={`aluno-cpf-${i}`}
                   />
+                  <FieldError error={errors[`aluno_${i}_cpf`]} />
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium tracking-wide text-muted">
-                    Série
+                    Série<RequiredMark />
                   </label>
                   <select
                     value={aluno.serie}
                     onChange={(e) =>
                       updateStudent(i, "serie", e.target.value)
                     }
-                    className="w-full rounded-md border border-border bg-bg px-3 py-2.5 text-sm text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+                    className={`w-full rounded-md border px-3 py-2.5 text-sm text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 ${fieldBorder(!!errors[`aluno_${i}_serie`])}`}
+                    data-testid={`aluno-serie-${i}`}
                   >
                     <option value="">Selecione</option>
                     {SERIES_OPTIONS.map((s) => (
@@ -131,10 +136,11 @@ export function Step2Students({ data, onChange, errors }: Step2Props) {
                       </option>
                     ))}
                   </select>
+                  <FieldError error={errors[`aluno_${i}_serie`]} />
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium tracking-wide text-muted">
-                    Mensalidade (R$)
+                    Mensalidade (R$)<RequiredMark />
                   </label>
                   <input
                     type="text"
@@ -143,33 +149,38 @@ export function Step2Students({ data, onChange, errors }: Step2Props) {
                     onChange={(e) =>
                       updateStudent(i, "mensalidade", e.target.value)
                     }
-                    className="w-full rounded-md border border-border bg-bg px-3 py-2.5 text-sm text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+                    className={`w-full rounded-md border px-3 py-2.5 text-sm text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 ${fieldBorder(!!errors[`aluno_${i}_mensalidade`])}`}
                     data-testid={`aluno-mensalidade-${i}`}
                   />
+                  <FieldError error={errors[`aluno_${i}_mensalidade`]} />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3.5 max-sm:grid-cols-1">
                 <div>
                   <label className="mb-1 block text-xs font-medium tracking-wide text-muted">
-                    RG ou CPF do aluno
+                    RG ou CPF do aluno<RequiredMark />
                   </label>
                   <FileUpload
                     label="RG ou CPF do aluno"
                     category={`rg_aluno_${i}`}
                     files={aluno.docRg}
                     onChange={(f) => updateStudent(i, "docRg", f)}
+                    required
+                    error={errors[`aluno_${i}_docRg`]}
                   />
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium tracking-wide text-muted">
-                    Certidão de Nascimento
+                    Certidão de Nascimento<RequiredMark />
                   </label>
                   <FileUpload
                     label="Certidão de Nascimento"
                     category={`certidao_nascimento_${i}`}
                     files={aluno.docCertidao}
                     onChange={(f) => updateStudent(i, "docCertidao", f)}
+                    required
+                    error={errors[`aluno_${i}_docCertidao`]}
                   />
                 </div>
               </div>
@@ -195,7 +206,7 @@ export function Step2Students({ data, onChange, errors }: Step2Props) {
           </div>
           <div className="my-4 flex flex-wrap items-center gap-2.5">
             <span className="text-[15px] text-muted">
-              Desconto solicitado:
+              Desconto solicitado:<RequiredMark />
             </span>
             <input
               type="number"
@@ -211,9 +222,7 @@ export function Step2Students({ data, onChange, errors }: Step2Props) {
             />
             <span className="text-[15px] text-muted">% do total</span>
           </div>
-          {errors.desconto_solicitado && (
-            <p className="text-xs text-danger">{errors.desconto_solicitado}</p>
-          )}
+          <FieldError error={errors.desconto_solicitado} />
           <div className="flex justify-between border-t border-border py-2.5 text-sm">
             <span className="text-muted">Total com desconto</span>
             <span className="font-semibold tabular-nums" data-testid="total-com">

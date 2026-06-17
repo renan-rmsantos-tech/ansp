@@ -6,12 +6,14 @@ const {
   mockApproveApplication,
   mockRejectApplication,
   mockExportDecision,
+  mockExportContract,
   mockGetDocumentUrl,
 } = vi.hoisted(() => ({
   mockGetApplicationDetail: vi.fn(),
   mockApproveApplication: vi.fn(),
   mockRejectApplication: vi.fn(),
   mockExportDecision: vi.fn(),
+  mockExportContract: vi.fn(),
   mockGetDocumentUrl: vi.fn(),
 }));
 
@@ -30,6 +32,7 @@ vi.mock("@/app/admin/_actions/admin-actions", () => ({
   approveApplication: mockApproveApplication,
   rejectApplication: mockRejectApplication,
   exportDecision: mockExportDecision,
+  exportContract: mockExportContract,
   getDocumentUrl: mockGetDocumentUrl,
 }));
 
@@ -53,6 +56,19 @@ function makeApp(overrides: Partial<ApplicationSummary> = {}): ApplicationSummar
     ],
     ...overrides,
   };
+}
+
+async function expandCard() {
+  await act(async () => {
+    fireEvent.click(screen.getByTestId("card-toggle"));
+  });
+}
+
+async function openDetailTab(tab: "resumo" | "documentos" | "financeiro" | "decisao") {
+  await expandCard();
+  await act(async () => {
+    fireEvent.click(screen.getByTestId(`detail-tab-${tab}`));
+  });
 }
 
 describe("SolicitacoesClient", () => {
@@ -104,6 +120,7 @@ describe("SolicitacoesClient", () => {
         documents: [
           {
             id: "d1",
+            application_id: "app-1",
             categoria: "rg_pai",
             nome_arquivo: "rg.pdf",
             storage_path: "pending/rg.pdf",
@@ -172,29 +189,36 @@ describe("SolicitacoesClient", () => {
     expect(screen.queryByTestId("card-detail")).not.toBeInTheDocument();
   });
 
-  it("detail view renders all sections", async () => {
+  it("detail view renders tabbed sections", async () => {
     render(<SolicitacoesClient initialApplications={[makeApp()]} />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByTestId("card-toggle"));
-    });
+    await expandCard();
 
     expect(screen.getByTestId("application-detail")).toBeInTheDocument();
+    expect(screen.getByTestId("detail-tabs")).toBeInTheDocument();
+    expect(screen.getByTestId("documents-section")).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("detail-tab-resumo"));
+    });
     expect(screen.getByText("Dados do Solicitante")).toBeInTheDocument();
     expect(screen.getByText("Alunos")).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("detail-tab-financeiro"));
+    });
     expect(screen.getByText("Renda e Despesas")).toBeInTheDocument();
     expect(screen.getByText("Veículos")).toBeInTheDocument();
     expect(screen.getByText("Colaboração Voluntária")).toBeInTheDocument();
     expect(screen.getByText("Indicação de Benfeitores")).toBeInTheDocument();
-    expect(screen.getByText("Documentos")).toBeInTheDocument();
+
+    expect(screen.getByTestId("detail-tab-documentos")).toBeInTheDocument();
   });
 
   it("approve form pre-fills requested discount and allows editing", async () => {
     render(<SolicitacoesClient initialApplications={[makeApp()]} />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByTestId("card-toggle"));
-    });
+    await openDetailTab("decisao");
 
     fireEvent.click(screen.getByTestId("approve-trigger"));
 
@@ -208,9 +232,7 @@ describe("SolicitacoesClient", () => {
   it("approve form validates discount 0-100", async () => {
     render(<SolicitacoesClient initialApplications={[makeApp()]} />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByTestId("card-toggle"));
-    });
+    await openDetailTab("decisao");
 
     fireEvent.click(screen.getByTestId("approve-trigger"));
 
@@ -231,9 +253,7 @@ describe("SolicitacoesClient", () => {
 
     render(<SolicitacoesClient initialApplications={[makeApp()]} />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByTestId("card-toggle"));
-    });
+    await openDetailTab("decisao");
 
     fireEvent.click(screen.getByTestId("reject-trigger"));
     const reasonInput = screen.getByTestId("reason-input") as HTMLTextAreaElement;
@@ -283,14 +303,29 @@ describe("SolicitacoesClient", () => {
 
     render(<SolicitacoesClient initialApplications={[app]} />);
 
+    await expandCard();
     await act(async () => {
-      fireEvent.click(screen.getByTestId("card-toggle"));
+      fireEvent.click(screen.getByTestId("detail-tab-decisao"));
     });
 
     expect(screen.getByTestId("decision-info")).toBeInTheDocument();
     expect(screen.getByText(/Bom histórico/)).toBeInTheDocument();
     expect(screen.getByTestId("export-button")).toBeInTheDocument();
     expect(screen.queryByTestId("decision-actions")).not.toBeInTheDocument();
+  });
+
+  it("shows export and contract buttons in card header for decided applications", () => {
+    const app = makeApp({
+      status: "aprovada",
+      desconto_concedido: 40,
+      data_decisao: "2026-03-15T10:00:00Z",
+    });
+
+    render(<SolicitacoesClient initialApplications={[app]} />);
+
+    expect(screen.getByTestId("card-header-actions")).toBeInTheDocument();
+    expect(screen.getByTestId("export-button")).toBeInTheDocument();
+    expect(screen.getByTestId("contract-button")).toBeInTheDocument();
   });
 
   it("approving updates status badge and stats without page reload", async () => {
@@ -301,9 +336,7 @@ describe("SolicitacoesClient", () => {
     expect(screen.getByTestId("stat-pendentes")).toHaveTextContent("1");
     expect(screen.getByTestId("stat-aprovadas")).toHaveTextContent("0");
 
-    await act(async () => {
-      fireEvent.click(screen.getByTestId("card-toggle"));
-    });
+    await openDetailTab("decisao");
 
     fireEvent.click(screen.getByTestId("approve-trigger"));
 
@@ -321,9 +354,7 @@ describe("SolicitacoesClient", () => {
     const apps = [makeApp({ id: "a1", status: "pendente" })];
     render(<SolicitacoesClient initialApplications={apps} />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByTestId("card-toggle"));
-    });
+    await openDetailTab("decisao");
 
     fireEvent.click(screen.getByTestId("reject-trigger"));
 
@@ -347,7 +378,7 @@ describe("SolicitacoesClient", () => {
     expect(screen.getByTestId("preview-d1")).toHaveTextContent("Visualizar");
   });
 
-  it("document preview opens inline PDF", async () => {
+  it("document preview opens PDF in modal", async () => {
     mockGetDocumentUrl.mockResolvedValue({ url: "https://example.com/signed-url" });
 
     render(<SolicitacoesClient initialApplications={[makeApp()]} />);
@@ -371,11 +402,17 @@ describe("SolicitacoesClient", () => {
     render(<SolicitacoesClient initialApplications={apps} />);
 
     fireEvent.click(screen.getByTestId("filter-aprovada"));
-    expect(screen.getByText("Nenhuma solicitação encontrada.")).toBeInTheDocument();
+    expect(screen.getByText(/Nenhuma solicitação aprovada/)).toBeInTheDocument();
   });
 
   it("download button triggers getDocumentUrl", async () => {
     mockGetDocumentUrl.mockResolvedValue({ url: "https://example.com/download" });
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      blob: vi.fn().mockResolvedValue(new Blob(["pdf"], { type: "application/pdf" })),
+    });
+    global.URL.createObjectURL = vi.fn(() => "blob:test");
+    global.URL.revokeObjectURL = vi.fn();
 
     render(<SolicitacoesClient initialApplications={[makeApp()]} />);
 
@@ -387,7 +424,7 @@ describe("SolicitacoesClient", () => {
       fireEvent.click(screen.getByTestId("download-d1"));
     });
 
-    expect(mockGetDocumentUrl).toHaveBeenCalledWith("pending/rg.pdf");
+    expect(mockGetDocumentUrl).toHaveBeenCalledWith("pending/rg.pdf", "app-1");
   });
 
   it("export decision calls exportDecision action", async () => {
@@ -421,22 +458,85 @@ describe("SolicitacoesClient", () => {
     render(<SolicitacoesClient initialApplications={[app]} />);
 
     await act(async () => {
-      fireEvent.click(screen.getByTestId("card-toggle"));
-    });
-
-    await act(async () => {
       fireEvent.click(screen.getByTestId("export-button"));
     });
 
     expect(mockExportDecision).toHaveBeenCalledWith("app-1");
   });
 
+  it("shows contract button only for approved applications and generates PDF", async () => {
+    mockExportContract.mockResolvedValue({
+      pdfBase64: btoa("PDF"),
+      filename: "contrato_Joao_Silva.pdf",
+    });
+
+    global.URL.createObjectURL = vi.fn(() => "blob:test");
+    global.URL.revokeObjectURL = vi.fn();
+
+    const app = makeApp({
+      status: "aprovada",
+      desconto_concedido: 40,
+      data_decisao: "2026-03-15T10:00:00Z",
+    });
+    mockGetApplicationDetail.mockResolvedValue({
+      data: {
+        id: "app-1",
+        pai_nome: "João Silva",
+        mae_nome: "Maria Silva",
+        students: [],
+        other_children: [],
+        vehicles: [],
+        collaboration: null,
+        benefactors: [],
+        documents: [],
+      },
+    });
+
+    render(<SolicitacoesClient initialApplications={[app]} />);
+
+    expect(screen.getByTestId("contract-button")).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("contract-button"));
+    });
+
+    expect(mockExportContract).toHaveBeenCalledWith("app-1");
+    expect(screen.getByTestId("pdf-preview-modal")).toBeInTheDocument();
+    expect(screen.getByTestId("pdf-preview-frame")).toBeInTheDocument();
+    expect(screen.getByTestId("pdf-print-button")).toBeInTheDocument();
+    expect(screen.getByTestId("pdf-download-button")).toBeInTheDocument();
+    expect(screen.getByText("Contrato")).toBeInTheDocument();
+  });
+
+  it("does not show contract button for rejected applications", async () => {
+    const app = makeApp({
+      status: "rejeitada",
+      data_decisao: "2026-03-15T10:00:00Z",
+    });
+    mockGetApplicationDetail.mockResolvedValue({
+      data: {
+        id: "app-1",
+        pai_nome: "João Silva",
+        mae_nome: "Maria Silva",
+        students: [],
+        other_children: [],
+        vehicles: [],
+        collaboration: null,
+        benefactors: [],
+        documents: [],
+      },
+    });
+
+    render(<SolicitacoesClient initialApplications={[app]} />);
+
+    expect(screen.getByTestId("export-button")).toBeInTheDocument();
+    expect(screen.queryByTestId("contract-button")).not.toBeInTheDocument();
+  });
+
   it("cancel button on approve form returns to idle", async () => {
     render(<SolicitacoesClient initialApplications={[makeApp()]} />);
 
-    await act(async () => {
-      fireEvent.click(screen.getByTestId("card-toggle"));
-    });
+    await openDetailTab("decisao");
 
     fireEvent.click(screen.getByTestId("approve-trigger"));
     expect(screen.getByTestId("approve-form")).toBeInTheDocument();

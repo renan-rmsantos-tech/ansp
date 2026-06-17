@@ -4,6 +4,7 @@ import type { FormData } from "./form-types";
 import { parseMoney, formatMoney } from "./form-types";
 import { FileUpload } from "./file-upload";
 import type { UploadedFile } from "./file-upload";
+import { RequiredMark, FieldError, fieldBorder } from "./field-ui";
 import { useMemo } from "react";
 
 interface Step3Props {
@@ -63,8 +64,8 @@ export function Step3Income({ data, onChange, errors }: Step3Props) {
 
         <div className="mb-5">
           <label className="mb-1.5 block text-[13px] font-medium tracking-wide text-fg">
-            Pessoas no grupo familiar{" "}
-            <span className="text-danger">*</span>
+            Pessoas no grupo familiar
+            <RequiredMark />
           </label>
           <input
             type="number"
@@ -72,21 +73,17 @@ export function Step3Income({ data, onChange, errors }: Step3Props) {
             value={data.pessoas_domicilio}
             onChange={(e) => onChange({ pessoas_domicilio: e.target.value })}
             placeholder="Total de pessoas"
-            className={`w-full rounded-md border bg-bg px-3.5 py-2.5 text-[15px] text-fg outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20 ${errors.pessoas_domicilio ? "border-danger" : "border-border"}`}
+            className={`w-full rounded-md border px-3.5 py-2.5 text-[15px] text-fg outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20 ${fieldBorder(!!errors.pessoas_domicilio)}`}
             data-testid="pessoas-domicilio"
           />
-          {errors.pessoas_domicilio && (
-            <p className="mt-1 text-xs text-danger">
-              {errors.pessoas_domicilio}
-            </p>
-          )}
+          <FieldError error={errors.pessoas_domicilio} />
         </div>
 
         <div className="my-6 h-px bg-border" />
 
         <div className="mb-5">
           <label className="mb-1.5 block text-[13px] font-medium tracking-wide text-fg">
-            Extrato do Imposto de Renda
+            Extrato do Imposto de Renda<RequiredMark />
           </label>
           <p className="mb-2 text-xs text-muted">
             Para comprovação dos dependentes e renda declarada.
@@ -97,6 +94,8 @@ export function Step3Income({ data, onChange, errors }: Step3Props) {
             files={data.extrato_ir}
             onChange={(f: UploadedFile[]) => onChange({ extrato_ir: f })}
             multiple
+            required
+            error={errors.extrato_ir}
           />
         </div>
       </div>

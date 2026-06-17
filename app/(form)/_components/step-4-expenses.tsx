@@ -4,6 +4,7 @@ import type { FormData } from "./form-types";
 import { parseMoney, formatMoney } from "./form-types";
 import { FileUpload } from "./file-upload";
 import type { UploadedFile } from "./file-upload";
+import { RequiredMark } from "./field-ui";
 import { useMemo } from "react";
 
 interface Step4Props {
@@ -69,9 +70,12 @@ export function Step4Expenses({ data, onChange, errors }: Step4Props) {
         <div className="mb-5">
           <label className="mb-1.5 block text-[13px] font-medium tracking-wide text-fg">
             Extrato bancário dos últimos 3 meses
+            <RequiredMark />
           </label>
           <p className="mb-2 text-xs text-muted">
-            Envie o extrato de todas as contas bancárias da família.
+            Envie o extrato de todas as contas bancárias da família (pode enviar
+            mais de um arquivo). Os valores de despesa acima são opcionais — o
+            extrato é o que comprova as despesas.
           </p>
           <FileUpload
             label="para enviar os extratos bancários (múltiplos arquivos)"
@@ -81,6 +85,8 @@ export function Step4Expenses({ data, onChange, errors }: Step4Props) {
               onChange({ extratos_bancarios: f })
             }
             multiple
+            required
+            error={errors.extratos_bancarios}
           />
         </div>
       </div>

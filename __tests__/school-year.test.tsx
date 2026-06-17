@@ -54,7 +54,7 @@ describe("SchoolYearList", () => {
 
   it("shows empty message when no years", () => {
     render(<SchoolYearList years={[]} onYearsChange={vi.fn()} />);
-    expect(screen.getByText("Nenhum ano letivo cadastrado.")).toBeDefined();
+    expect(screen.getByText(/Nenhum ano letivo cadastrado/)).toBeDefined();
   });
 
   it("shows confirmation dialog before deactivating active year", async () => {
@@ -204,7 +204,7 @@ describe("AnoLetivoClient integration", () => {
 
     render(<AnoLetivoClient initialYears={[]} />);
 
-    expect(screen.getByText("Nenhum ano letivo cadastrado.")).toBeDefined();
+    expect(screen.getByText(/Nenhum ano letivo cadastrado/)).toBeDefined();
 
     fireEvent.change(screen.getByTestId("input-nome"), {
       target: { value: "2027" },
@@ -221,7 +221,7 @@ describe("AnoLetivoClient integration", () => {
     });
 
     expect(screen.getByText("2027")).toBeDefined();
-    expect(screen.queryByText("Nenhum ano letivo cadastrado.")).toBeNull();
+    expect(screen.queryByText(/Nenhum ano letivo cadastrado/)).toBeNull();
   });
 
   it("activating a year deactivates the previously active year", async () => {
@@ -258,6 +258,6 @@ describe("AnoLetivoClient integration", () => {
     });
 
     expect(screen.queryByText("2026")).toBeNull();
-    expect(screen.getByText("Nenhum ano letivo cadastrado.")).toBeDefined();
+    expect(screen.getByText(/Nenhum ano letivo cadastrado/)).toBeDefined();
   });
 });

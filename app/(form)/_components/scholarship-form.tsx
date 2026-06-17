@@ -12,20 +12,55 @@ import { SuccessScreen } from "./success-screen";
 import { submitApplication } from "../_actions/form-actions";
 import { INITIAL_FORM_DATA, parseMoney } from "./form-types";
 import type { FormData } from "./form-types";
+import { MSG_OBRIGATORIO } from "./field-ui";
+import { isValidCPF } from "@/lib/validations/cpf";
 import type { ApplicationSubmission } from "@/lib/validations/application-schema";
 
 const TOTAL_STEPS = 6;
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const M = MSG_OBRIGATORIO;
+
 function validateStep1(data: FormData): Record<string, string> {
   const errors: Record<string, string> = {};
-  if (!data.escola) errors.escola = "Selecione a escola";
-  if (!data.pai_nome.trim()) errors.pai_nome = "Campo obrigatório";
-  if (!data.pai_rg.trim()) errors.pai_rg = "Campo obrigatório";
-  if (!data.pai_cpf.trim()) errors.pai_cpf = "Campo obrigatório";
-  if (!data.mae_nome.trim()) errors.mae_nome = "Campo obrigatório";
-  if (!data.mae_cpf.trim()) errors.mae_cpf = "Campo obrigatório";
-  if (!data.endereco.trim()) errors.endereco = "Campo obrigatório";
-  if (!data.telefone.trim()) errors.telefone = "Campo obrigatório";
+  if (!data.pai_nome.trim()) errors.pai_nome = M;
+  if (!data.pai_rg.trim()) errors.pai_rg = M;
+  if (!data.pai_cpf.trim()) {
+    errors.pai_cpf = M;
+  } else if (!isValidCPF(data.pai_cpf)) {
+    errors.pai_cpf = "CPF inválido";
+  }
+  if (!data.pai_profissao.trim()) errors.pai_profissao = M;
+  if (!data.mae_nome.trim()) errors.mae_nome = M;
+  if (!data.mae_cpf.trim()) {
+    errors.mae_cpf = M;
+  } else if (!isValidCPF(data.mae_cpf)) {
+    errors.mae_cpf = "CPF inválido";
+  }
+  if (!data.mae_profissao.trim()) errors.mae_profissao = M;
+  if (data.doc_pai.length === 0) errors.doc_pai = M;
+  if (data.doc_mae.length === 0) errors.doc_mae = M;
+  if (data.certidao_casamento.length === 0) errors.certidao_casamento = M;
+  if (!data.endereco.trim()) errors.endereco = M;
+  if (!data.cep.trim()) errors.cep = M;
+  if (!data.telefone.trim()) errors.telefone = M;
+  if (data.comprovante_endereco.length === 0) errors.comprovante_endereco = M;
+  if (!data.email.trim()) {
+    errors.email = M;
+  } else if (!EMAIL_RE.test(data.email.trim())) {
+    errors.email = "E-mail inválido";
+  }
+  // Quando há outros filhos, nome, CPF e data de nascimento são obrigatórios.
+  for (let i = 0; i < data.outros_filhos.length; i++) {
+    const c = data.outros_filhos[i];
+    if (!c.nome.trim()) errors[`filho_${i}_nome`] = M;
+    if (!c.cpf.trim()) {
+      errors[`filho_${i}_cpf`] = M;
+    } else if (!isValidCPF(c.cpf)) {
+      errors[`filho_${i}_cpf`] = "CPF inválido";
+    }
+    if (!c.nascimento) errors[`filho_${i}_nascimento`] = M;
+  }
   return errors;
 }
 
@@ -34,9 +69,29 @@ function validateStep2(data: FormData): Record<string, string> {
   if (data.alunos.length === 0) {
     errors.alunos = "Adicione pelo menos um aluno";
   }
+  // Ao adicionar um aluno, todos os campos (inclusive os documentos) são obrigatórios.
   for (let i = 0; i < data.alunos.length; i++) {
     const a = data.alunos[i];
-    if (!a.nome.trim()) errors[`aluno_${i}_nome`] = "Nome obrigatório";
+    if (!a.nome.trim()) errors[`aluno_${i}_nome`] = M;
+    if (!a.cpf.trim()) {
+      errors[`aluno_${i}_cpf`] = M;
+    } else if (!isValidCPF(a.cpf)) {
+      errors[`aluno_${i}_cpf`] = "CPF inválido";
+    }
+    if (!a.serie.trim()) errors[`aluno_${i}_serie`] = M;
+    if (!a.mensalidade.trim()) errors[`aluno_${i}_mensalidade`] = M;
+    if (a.docRg.length === 0) errors[`aluno_${i}_docRg`] = M;
+    if (a.docCertidao.length === 0) errors[`aluno_${i}_docCertidao`] = M;
+  }
+  const desconto = data.desconto_solicitado.trim();
+  if (desconto === "") {
+    errors.desconto_solicitado = M;
+  } else if (
+    isNaN(Number(desconto)) ||
+    Number(desconto) < 0 ||
+    Number(desconto) > 100
+  ) {
+    errors.desconto_solicitado = "Desconto deve estar entre 0 e 100";
   }
   return errors;
 }
@@ -44,7 +99,43 @@ function validateStep2(data: FormData): Record<string, string> {
 function validateStep3(data: FormData): Record<string, string> {
   const errors: Record<string, string> = {};
   if (!data.pessoas_domicilio || Number(data.pessoas_domicilio) < 1) {
-    errors.pessoas_domicilio = "Campo obrigatório";
+    errors.pessoas_domicilio = M;
+  }
+  if (data.extrato_ir.length === 0) {
+    errors.extrato_ir = M;
+  }
+  return errors;
+}
+
+function validateStep4(data: FormData): Record<string, string> {
+  const errors: Record<string, string> = {};
+  // Os valores de despesa são opcionais; o extrato bancário é obrigatório.
+  if (data.extratos_bancarios.length === 0) {
+    errors.extratos_bancarios = M;
+  }
+  return errors;
+}
+
+function validateStep5(data: FormData): Record<string, string> {
+  const errors: Record<string, string> = {};
+  // Veículos são opcionais; mas ao adicionar um, marca, modelo e ano são obrigatórios.
+  for (let i = 0; i < data.veiculos.length; i++) {
+    const v = data.veiculos[i];
+    if (!v.marca.trim()) errors[`veiculo_${i}_marca`] = M;
+    if (!v.modelo.trim()) errors[`veiculo_${i}_modelo`] = M;
+    if (!v.ano.trim()) errors[`veiculo_${i}_ano`] = M;
+  }
+  // As 10 indicações de benfeitores são obrigatórias (nome e e-mail válido).
+  for (let i = 0; i < data.indicacao_benfeitores.length; i++) {
+    const b = data.indicacao_benfeitores[i];
+    if (!b.nome.trim()) {
+      errors[`benfeitor_${i}_nome`] = M;
+    }
+    if (!b.email.trim()) {
+      errors[`benfeitor_${i}_email`] = M;
+    } else if (!EMAIL_RE.test(b.email.trim())) {
+      errors[`benfeitor_${i}_email`] = "E-mail inválido";
+    }
   }
   return errors;
 }
@@ -77,6 +168,12 @@ export function ScholarshipForm() {
         break;
       case 3:
         stepErrors = validateStep3(formData);
+        break;
+      case 4:
+        stepErrors = validateStep4(formData);
+        break;
+      case 5:
+        stepErrors = validateStep5(formData);
         break;
     }
 
@@ -204,11 +301,18 @@ export function ScholarshipForm() {
 
     if (result.success) {
       setSubmitted(true);
-    } else {
+    } else if (result.errors?._form?.[0]) {
+      setSubmitError(result.errors._form[0]);
+    } else if (result.errors) {
+      // Campos inválidos detectados pelo servidor: lista quais para não esconder o erro.
+      const campos = Object.values(result.errors).flat();
       setSubmitError(
-        result.errors?._form?.[0] ||
-          "Erro ao enviar. Verifique os dados e tente novamente."
+        campos.length > 0
+          ? `Dados inválidos: ${[...new Set(campos)].join("; ")}.`
+          : "Erro ao enviar. Verifique os dados e tente novamente."
       );
+    } else {
+      setSubmitError("Erro ao enviar. Verifique os dados e tente novamente.");
     }
   }, [accepted, formData]);
 

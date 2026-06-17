@@ -2,9 +2,11 @@
 
 import { useState, useCallback } from "react";
 import { getDocumentUrl } from "../_actions/admin-actions";
+import { Modal } from "./modal";
 
 interface Document {
   id: string;
+  application_id: string;
   categoria: string;
   nome_arquivo: string;
   storage_path: string;
@@ -26,33 +28,70 @@ const CATEGORY_LABELS: Record<string, string> = {
   certidao_nascimento: "Certidão de Nascimento",
 };
 
+function resolveCategoryLabel(categoria: string, storagePath: string): string {
+  if (CATEGORY_LABELS[categoria]) return CATEGORY_LABELS[categoria];
+  if (categoria.startsWith("certidao_nascimento") || storagePath.includes("certidao_nascimento")) {
+    return "Certidão de Nascimento";
+  }
+  if (categoria.startsWith("rg_aluno") || storagePath.includes("/rg_aluno")) {
+    return "RG do Aluno";
+  }
+  return categoria;
+}
+
+async function downloadFromSignedUrl(url: string, filename: string) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error("download failed");
+  }
+
+  const blob = await response.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = objectUrl;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(objectUrl);
+}
+
 export function DocumentPreview({ documents }: DocumentPreviewProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewName, setPreviewName] = useState<string>("");
   const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const docs = documents as unknown as Document[];
 
+  const closePreview = useCallback(() => {
+    setPreviewUrl(null);
+    setPreviewName("");
+  }, []);
+
   const handlePreview = useCallback(async (doc: Document) => {
     setLoading(doc.id);
-    const result = await getDocumentUrl(doc.storage_path);
+    setError(null);
+    const result = await getDocumentUrl(doc.storage_path, doc.application_id);
     if ("url" in result) {
       setPreviewUrl(result.url);
       setPreviewName(doc.nome_arquivo);
+    } else {
+      setError(result.error);
     }
     setLoading(null);
   }, []);
 
   const handleDownload = useCallback(async (doc: Document) => {
     setLoading(doc.id);
-    const result = await getDocumentUrl(doc.storage_path);
+    setError(null);
+    const result = await getDocumentUrl(doc.storage_path, doc.application_id);
     if ("url" in result) {
-      const a = document.createElement("a");
-      a.href = result.url;
-      a.download = doc.nome_arquivo;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.click();
+      try {
+        await downloadFromSignedUrl(result.url, doc.nome_arquivo);
+      } catch {
+        setError("Erro ao baixar o documento.");
+      }
+    } else {
+      setError(result.error);
     }
     setLoading(null);
   }, []);
@@ -66,7 +105,7 @@ export function DocumentPreview({ documents }: DocumentPreviewProps) {
             className="flex flex-wrap items-center gap-2 text-sm"
           >
             <span className="text-muted">
-              {CATEGORY_LABELS[doc.categoria] ?? doc.categoria}:
+              {resolveCategoryLabel(doc.categoria, doc.storage_path)}:
             </span>
             <span className="text-fg">{doc.nome_arquivo}</span>
             <div className="flex gap-1">
@@ -95,25 +134,27 @@ export function DocumentPreview({ documents }: DocumentPreviewProps) {
         ))}
       </ul>
 
-      {previewUrl && (
-        <div className="mt-3" data-testid="pdf-preview">
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm font-medium text-fg">{previewName}</span>
-            <button
-              type="button"
-              onClick={() => setPreviewUrl(null)}
-              className="text-sm text-muted hover:text-fg"
-            >
-              Fechar
-            </button>
-          </div>
+      {error && (
+        <p className="mt-2 text-sm text-danger" data-testid="document-error">
+          {error}
+        </p>
+      )}
+
+      <Modal
+        open={!!previewUrl}
+        onClose={closePreview}
+        title={previewName}
+        testId="pdf-preview"
+        size="lg"
+      >
+        {previewUrl && (
           <iframe
             src={previewUrl}
             title={previewName}
-            className="h-[500px] w-full rounded border border-border"
+            className="h-full w-full border-0 bg-bg"
           />
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 }

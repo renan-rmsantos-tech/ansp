@@ -12,7 +12,7 @@ vi.mock("@supabase/ssr", () => ({
 }));
 
 vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://test.supabase.co");
-vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "test-anon-key");
+vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "test-anon-key");
 
 describe("Supabase browser client", () => {
   beforeEach(() => {
