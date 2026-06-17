@@ -237,15 +237,15 @@ export function ApplicationDetail({
             {collaboration && (
               <Section title="Colaboração Voluntária">
                 <div className="space-y-1 text-sm" data-testid="volunteer-section">
-                  {collaboration.limpeza && (
-                    <p>Limpeza: {collaboration.limpeza_vezes_semana}x por semana</p>
+                  {Boolean(collaboration.limpeza) && (
+                    <p>Limpeza: {collaboration.limpeza_vezes_semana as number}x por semana</p>
                   )}
-                  {collaboration.mutirao && (
-                    <p>Mutirão: {collaboration.mutirao_sabados} sábados</p>
+                  {Boolean(collaboration.mutirao) && (
+                    <p>Mutirão: {collaboration.mutirao_sabados as number} sábados</p>
                   )}
-                  {collaboration.arrecadacao && <p>Arrecadação: Sim</p>}
-                  {collaboration.buscar_benfeitores && <p>Buscar benfeitores: Sim</p>}
-                  {collaboration.outros && (
+                  {Boolean(collaboration.arrecadacao) && <p>Arrecadação: Sim</p>}
+                  {Boolean(collaboration.buscar_benfeitores) && <p>Buscar benfeitores: Sim</p>}
+                  {Boolean(collaboration.outros) && (
                     <p>Outros: {collaboration.outros as string}</p>
                   )}
                 </div>
