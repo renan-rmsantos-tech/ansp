@@ -18,9 +18,9 @@ const styles = StyleSheet.create({
     borderBottom: "1pt solid #c9a84c",
   },
   selo: {
-    width: 68,
-    height: 68,
-    marginBottom: 8,
+    width: 92,
+    height: 92,
+    marginBottom: 10,
   },
   linha1: {
     fontFamily: "Times-Bold",
