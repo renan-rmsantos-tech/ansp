@@ -84,9 +84,10 @@ describe("Sidebar", () => {
     expect(solLinkInactive).not.toHaveAttribute("aria-current");
   });
 
-  it("renders the Menu section label", () => {
+  it("renders the Dados and Configurações section labels", () => {
     render(<Sidebar />);
-    expect(screen.getByText("Menu")).toBeInTheDocument();
+    expect(screen.getByText("Dados")).toBeInTheDocument();
+    expect(screen.getByText("Configurações")).toBeInTheDocument();
   });
 
   it("renders hamburger button for mobile", () => {
