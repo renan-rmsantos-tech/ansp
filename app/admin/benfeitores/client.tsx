@@ -30,7 +30,9 @@ function normalizeSearch(value: string): string {
 
 function matchesSearch(donor: DonorPledge, query: string): boolean {
   if (!query) return true;
-  return [donor.nome, donor.email, donor.telefone ?? ""]
+  // Inclui o CPF só com dígitos para permitir busca sem pontuação.
+  const cpfDigits = donor.cpf.replace(/\D/g, "");
+  return [donor.nome, donor.email, donor.telefone ?? "", donor.cpf, cpfDigits]
     .join(" ")
     .toLowerCase()
     .includes(query);
@@ -124,7 +126,7 @@ export function BenfeitoresClient({ initialDonors }: BenfeitoresClientProps) {
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por nome, e-mail ou telefone..."
+            placeholder="Buscar por nome, CPF, e-mail ou telefone..."
             className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-fg placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
             data-testid="donor-search-input"
           />
