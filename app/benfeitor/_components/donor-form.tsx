@@ -94,7 +94,6 @@ export function DonorForm() {
     if (!meio) localErrors.meio_pagamento = "Selecione um meio de pagamento.";
     if (!dataPagamento) localErrors.data_pagamento = "Informe a data do pagamento.";
     if (!canal) localErrors.lembrete_canal = "Selecione um canal de lembrete.";
-    if (!observacoes.trim()) localErrors.observacoes = "Preencha as observações.";
     if (frequencia === "mensal" && !duracao)
       localErrors.duracao = "Selecione a duração.";
 
@@ -117,7 +116,7 @@ export function DonorForm() {
       meio_pagamento: meio as Meio,
       data_pagamento: dataPagamento,
       lembrete_canal: canal as Canal,
-      observacoes: observacoes.trim(),
+      observacoes: observacoes.trim() || undefined,
     };
 
     const result = await registerDonorPledge(payload);
@@ -357,7 +356,7 @@ export function DonorForm() {
           </div>
           <div className="sm:col-span-2">
             <label htmlFor="donor-obs" className="mb-2 block text-sm font-medium text-fg">
-              Observações
+              Observações <span className="text-muted">(opcional)</span>
             </label>
             <textarea
               id="donor-obs"
@@ -366,7 +365,6 @@ export function DonorForm() {
               onChange={(e) => setObservacoes(e.target.value)}
               className={inputClass}
             />
-            <ErrorText msg={errors.observacoes} />
           </div>
         </div>
 

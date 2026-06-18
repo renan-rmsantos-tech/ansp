@@ -21,7 +21,7 @@ export const donorPledgeSchema = z
     meio_pagamento: z.enum(["cartao", "boleto", "transferencia", "pix"]),
     data_pagamento: z.string().min(1, "Informe a data do pagamento"),
     lembrete_canal: z.enum(["whatsapp", "email"]),
-    observacoes: z.string().min(1, "Preencha as observações"),
+    observacoes: z.string().optional(),
   })
   .refine(
     (data) => data.frequencia !== "mensal" || Boolean(data.duracao),
