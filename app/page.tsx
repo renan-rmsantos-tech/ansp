@@ -192,6 +192,14 @@ html:has(.ansp-landing) { scroll-behavior: smooth; }
 .ansp-landing .missao p { color: var(--muted); margin-bottom: 16px; max-width: 60ch; }
 .ansp-landing .missao p:last-child { margin-bottom: 0; }
 .ansp-landing .missao em { color: var(--accent); font-style: italic; }
+.ansp-landing .missao .pull {
+  margin: 24px 0; padding: 18px 26px;
+  border-left: 3px solid var(--gold); background: var(--cream);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.ansp-landing .missao .pull blockquote { font: italic 400 19px/1.55 var(--font-display); color: var(--accent); text-wrap: pretty; }
+.ansp-landing .missao .pull cite { display: block; margin-top: 12px; font: 550 11px/1 var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; color: oklch(58% 0.10 80); font-style: normal; }
+.ansp-landing .missao .closing { margin-top: 24px; font: 600 19px/1.45 var(--font-display); color: var(--accent); text-wrap: balance; }
 .ansp-landing .pillar-card {
   background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius-lg);
   padding: 32px;
@@ -418,11 +426,12 @@ export default function LandingPage() {
           <div className="hero-copy">
             <span className="kicker">Obra de assistência educacional católica</span>
             <h1>
-              Educar na fé, amparar pela <em>Providência</em>.
+              Educar para a Eternidade, sob o manto da <em>Providência</em>.
             </h1>
             <p>
-              A Arca Nossa Senhora da Providência mantém o Colégio São José e socorre famílias que desejam
-              uma formação católica para seus filhos — confiando, em tudo, à Divina Providência.
+              A Arca Nossa Senhora da Providência mantém o Colégio São José e estende as mãos às famílias
+              católicas que desejam, para seus filhos, uma formação verdadeiramente cristã — abandonadas,
+              em tudo, à Santa Vontade de Deus.
             </p>
             <div className="hero-actions">
               <a href="/form" className="btn btn-gold">
@@ -455,22 +464,50 @@ export default function LandingPage() {
               <div className="section-head" style={{ marginBottom: 28 }}>
                 <span className="kicker on-light">Quem somos</span>
                 <hr className="gold-divider" />
-                <h2>Uma arca a serviço da família católica</h2>
+                <h2>Educando para a Eternidade, sob o Manto da Providência Divina</h2>
               </div>
               <p className="lede">
-                A Arca Nossa Senhora da Providência é a associação mantenedora do Colégio São José, dedicada
-                à educação cristã de crianças e jovens segundo a tradição da Igreja.
+                Conscientes de que o fim do homem não é outro senão a vida eterna, e de que a formação
+                católica tem por meta única proporcionar à alma os meios para alcançar a salvação, abraçamos
+                com fidelidade a máxima do Papa <em>Pio XI</em> em sua encíclica <em>Divini Illius Magistri</em>:
+              </p>
+              <figure className="pull">
+                <blockquote>
+                  “O fim próprio e imediato da educação cristã é cooperar com a graça divina na formação do
+                  verdadeiro e perfeito cristão.”
+                </blockquote>
+                <cite>Pio XI · Divini Illius Magistri</cite>
+              </figure>
+              <p>
+                A Arca Nossa Senhora da Providência nasce com o firme propósito de estender as mãos às
+                famílias católicas que buscam este grande e indispensável bem para os seus filhos. Sabemos
+                que, nos dias de hoje, os desafios para oferecer uma educação verdadeiramente tradicional e
+                livre dos erros do mundo são imensos — tanto no combate espiritual quanto no aspecto
+                financeiro.
               </p>
               <p>
-                Sob a orientação espiritual da <em>Fraternidade Sacerdotal São Pio X</em>, reunimos pais,
-                benfeitores e educadores em torno de um mesmo propósito: oferecer um ensino sólido,
-                enraizado na fé, na virtude e no amor à verdade.
+                Compreendendo o sacrifício e o preço desta formação, nossa missão é viabilizar bolsas de
+                estudo para aquelas famílias que, inteiramente abandonadas à Santa Vontade de Deus, não medem
+                esforços para cumprir o grave dever imposto pelo Magistério:
+              </p>
+              <figure className="pull">
+                <blockquote>
+                  “De nenhum modo se pode admitir uma educação que não seja inteiramente cristã.”
+                </blockquote>
+                <cite>Pio XI</cite>
+              </figure>
+              <p>
+                Como o próprio nome indica, nossa obra é fruto do sacrifício, da resignação e da confiança na
+                Providência Divina, que nunca desampara os seus eleitos.
               </p>
               <p>
-                Nosso nome traduz nossa confiança: como a arca que abriga e protege, queremos acolher cada
-                família — e, diante das dificuldades, entregar-nos inteiramente à Providência de Deus, por
-                intercessão de Nossa Senhora.
+                A Arca Nossa Senhora da Providência está estreitamente ligada ao apostolado da{" "}
+                <em>Fraternidade Sacerdotal São Pio X</em> (FSSPX). Buscamos, de modo especial — mas não
+                exclusivo —, amparar as famílias que se submetem a este santo apostolado e que desejam
+                confiar a formação intelectual, moral e espiritual de seus filhos às escolas e priorados da
+                Fraternidade.
               </p>
+              <p className="closing">Ajudar a formar as almas de hoje é garantir os santos de amanhã.</p>
               <figure className="devocional reveal">
                 <span className="devocional-frame">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -538,28 +575,28 @@ export default function LandingPage() {
               <span className="num" aria-hidden="true">I</span>
               <div>
                 <h3>Manutenção do Colégio São José</h3>
-                <p>Sustentamos a estrutura, o corpo docente e o funcionamento do colégio, garantindo um ambiente católico do berçário ao ensino médio.</p>
+                <p>Sustentamos a estrutura, o corpo docente e o funcionamento do colégio, preservando um ensino tradicional e livre dos erros do mundo, do berçário ao ensino médio.</p>
               </div>
             </article>
             <article className="obra reveal" style={{ "--i": 1 } as CSSProperties}>
               <span className="num" aria-hidden="true">II</span>
               <div>
                 <h3>Programa de bolsas de estudo</h3>
-                <p>Concessão de bolsas parciais a famílias que comprovem necessidade, segundo critérios socioeconômicos avaliados pela diretoria.</p>
+                <p>Viabilizamos bolsas às famílias que não medem esforços para cumprir o grave dever de dar aos filhos uma educação inteiramente cristã, segundo critérios avaliados pela diretoria.</p>
               </div>
             </article>
             <article className="obra reveal" style={{ "--i": 2 } as CSSProperties}>
               <span className="num" aria-hidden="true">III</span>
               <div>
                 <h3>Formação cristã e catequese</h3>
-                <p>Acompanhamento espiritual de alunos e famílias, com catequese, retiros e a vida sacramental sob orientação da FSSPX.</p>
+                <p>Cooperamos com a graça divina na formação do verdadeiro e perfeito cristão: catequese, retiros e vida sacramental sob o apostolado da FSSPX.</p>
               </div>
             </article>
             <article className="obra reveal" style={{ "--i": 3 } as CSSProperties}>
               <span className="num" aria-hidden="true">IV</span>
               <div>
                 <h3>Obras de assistência</h3>
-                <p>Apoio material e humano às famílias em dificuldade, mobilizando benfeitores e voluntários em torno da caridade cristã.</p>
+                <p>Fruto do sacrifício e da confiança na Providência, amparamos as famílias em dificuldade, mobilizando benfeitores e voluntários em torno da caridade cristã.</p>
               </div>
             </article>
           </div>
@@ -573,9 +610,10 @@ export default function LandingPage() {
             <span className="kicker">Faça sua solicitação</span>
             <h2>Peça sua bolsa de estudos</h2>
             <p>
-              Preencha o formulário de solicitação com os dados do responsável, dos alunos e a situação
-              financeira da família. A comissão avaliadora analisa cada pedido com cuidado e responde dentro
-              do prazo informado.
+              Se a sua família busca este grande e indispensável bem para os seus filhos, preencha o
+              formulário com os dados do responsável, dos alunos e a situação financeira. Confiando na
+              Providência, a comissão avaliadora analisa cada pedido com cuidado e responde dentro do prazo
+              informado.
             </p>
           </div>
           <div className="solicitar-actions">
