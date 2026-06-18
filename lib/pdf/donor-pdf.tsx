@@ -6,9 +6,15 @@ import {
   StyleSheet,
   renderToBuffer,
 } from "@react-pdf/renderer";
+import {
+  DocumentHeaderView,
+  resolveDocumentHeader,
+  type DocumentHeaderData,
+} from "./document-header";
 
 // Dados do cadastro de benfeitor, já carregados do banco.
 export interface DonorPdfData {
+  header?: DocumentHeaderData | null;
   nome: string;
   cpf: string;
   email: string;
@@ -55,15 +61,9 @@ const styles = StyleSheet.create({
     lineHeight: 1.4,
     color: "#1a1a1a",
   },
-  header: {
+  docTitleBlock: {
     textAlign: "center",
     marginBottom: 18,
-    borderBottom: "1pt solid #c9a84c",
-    paddingBottom: 12,
-  },
-  org: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 13,
   },
   subtitle: {
     fontSize: 9,
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: "Helvetica-Bold",
     fontSize: 12,
-    marginTop: 8,
+    marginTop: 6,
   },
   sectionTitle: {
     fontFamily: "Helvetica-Bold",
@@ -148,8 +148,8 @@ function DonorDocument({ data }: { data: DonorPdfData }) {
   return (
     <Document title={`Benfeitor - ${data.nome}`}>
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <Text style={styles.org}>Arca Nossa Senhora da Providência</Text>
+        <DocumentHeaderView header={resolveDocumentHeader(data.header)} />
+        <View style={styles.docTitleBlock}>
           <Text style={styles.subtitle}>Cadastro de Benfeitor</Text>
           <Text style={styles.title}>{data.nome}</Text>
         </View>

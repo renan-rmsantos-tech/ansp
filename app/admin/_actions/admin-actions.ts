@@ -158,8 +158,10 @@ export async function exportDonorPledge(
     return { error: "Benfeitor não encontrado." };
   }
 
+  const { data: header } = await getDocumentHeader();
+
   const { renderDonorPdf } = await import("@/lib/pdf/donor-pdf");
-  const pdf = await renderDonorPdf(donor);
+  const pdf = await renderDonorPdf({ ...donor, header });
 
   const safeNome = donor.nome
     .replace(/[^a-zA-Z0-9À-ú ]/g, "")
@@ -504,9 +506,12 @@ export async function exportApplication(
     return { error: "Solicitação não encontrada." };
   }
 
+  const { data: header } = await getDocumentHeader();
+
   const { renderApplicationPdf } = await import("@/lib/pdf/application-pdf");
   const pdf = await renderApplicationPdf({
     ...app,
+    header,
     ano_letivo: app.school_years?.nome ?? null,
     students: studentsResult.data ?? [],
     other_children: childrenResult.data ?? [],

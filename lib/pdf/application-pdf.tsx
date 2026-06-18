@@ -6,9 +6,15 @@ import {
   StyleSheet,
   renderToBuffer,
 } from "@react-pdf/renderer";
+import {
+  DocumentHeaderView,
+  resolveDocumentHeader,
+  type DocumentHeaderData,
+} from "./document-header";
 
 // Dados completos da solicitação, já carregados do banco.
 export interface ApplicationPdfData {
+  header?: DocumentHeaderData | null;
   escola: string;
   status: string;
   data_envio?: string | null;
@@ -69,15 +75,9 @@ const styles = StyleSheet.create({
     lineHeight: 1.4,
     color: "#1a1a1a",
   },
-  header: {
+  docTitleBlock: {
     textAlign: "center",
     marginBottom: 18,
-    borderBottom: "1pt solid #c9a84c",
-    paddingBottom: 12,
-  },
-  org: {
-    fontFamily: "Helvetica-Bold",
-    fontSize: 13,
   },
   subtitle: {
     fontSize: 9,
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: "Helvetica-Bold",
     fontSize: 12,
-    marginTop: 8,
+    marginTop: 6,
   },
   sectionTitle: {
     fontFamily: "Helvetica-Bold",
@@ -185,9 +185,11 @@ function ApplicationDocument({ data }: { data: ApplicationPdfData }) {
   return (
     <Document title={`Solicitação - ${data.pai_nome}`}>
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <Text style={styles.org}>Arca Nossa Senhora da Providência</Text>
-          <Text style={styles.subtitle}>Solicitação de Bolsa para Família Necessitada</Text>
+        <DocumentHeaderView header={resolveDocumentHeader(data.header)} />
+        <View style={styles.docTitleBlock}>
+          <Text style={styles.subtitle}>
+            Solicitação de Bolsa para Família Necessitada
+          </Text>
           <Text style={styles.title}>Dados da Solicitação</Text>
         </View>
 
