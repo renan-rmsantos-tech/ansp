@@ -410,6 +410,61 @@ export async function exportDecision(
   return { pdfBase64: pdf.toString("base64"), filename };
 }
 
+// --- Application Data Export (PDF) ---
+
+export async function exportApplication(
+  id: string
+): Promise<{ pdfBase64: string; filename: string } | { error: string }> {
+  const { supabase } = await requireAuth();
+
+  const [
+    appResult,
+    studentsResult,
+    childrenResult,
+    vehiclesResult,
+    collabResult,
+    benefactorsResult,
+  ] = await Promise.all([
+    supabase
+      .from("applications")
+      .select("*, school_years(nome)")
+      .eq("id", id)
+      .single(),
+    supabase.from("students").select("*").eq("application_id", id),
+    supabase.from("other_children").select("*").eq("application_id", id),
+    supabase.from("vehicles").select("*").eq("application_id", id),
+    supabase
+      .from("collaboration")
+      .select("*")
+      .eq("application_id", id)
+      .maybeSingle(),
+    supabase.from("benefactors").select("*").eq("application_id", id),
+  ]);
+
+  const app = appResult.data;
+  if (appResult.error || !app) {
+    return { error: "Solicitação não encontrada." };
+  }
+
+  const { renderApplicationPdf } = await import("@/lib/pdf/application-pdf");
+  const pdf = await renderApplicationPdf({
+    ...app,
+    ano_letivo: app.school_years?.nome ?? null,
+    students: studentsResult.data ?? [],
+    other_children: childrenResult.data ?? [],
+    vehicles: vehiclesResult.data ?? [],
+    collaboration: collabResult.data ?? null,
+    benefactors: benefactorsResult.data ?? [],
+  });
+
+  const safeNome = app.pai_nome
+    .replace(/[^a-zA-Z0-9À-ú ]/g, "")
+    .replace(/\s+/g, "_");
+  const filename = `solicitacao_${safeNome}.pdf`;
+
+  return { pdfBase64: pdf.toString("base64"), filename };
+}
+
 // --- Contract Template ---
 
 export interface ContractTemplate {

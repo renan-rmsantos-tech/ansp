@@ -1,0 +1,29 @@
+import { z } from "zod";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export const donorPledgeSchema = z
+  .object({
+    nome: z.string().min(1, "Nome é obrigatório"),
+    email: z
+      .string()
+      .min(1, "E-mail é obrigatório")
+      .refine((v) => EMAIL_RE.test(v), { message: "E-mail inválido" }),
+    telefone: z.string().optional(),
+    frequencia: z.enum(["unica", "mensal"]),
+    duracao: z.enum(["um_ano", "indeterminado"]).optional(),
+    valor: z.number().positive("Informe um valor maior que zero"),
+    meio_pagamento: z.enum(["cartao", "boleto", "transferencia", "pix"]),
+    data_pagamento: z.string().optional(),
+    lembrete_canal: z.enum(["whatsapp", "email"]).optional(),
+    observacoes: z.string().optional(),
+  })
+  .refine(
+    (data) => data.frequencia !== "mensal" || Boolean(data.duracao),
+    {
+      message: "Selecione a duração da doação mensal",
+      path: ["duracao"],
+    }
+  );
+
+export type DonorPledge = z.infer<typeof donorPledgeSchema>;

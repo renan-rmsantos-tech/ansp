@@ -1,0 +1,86 @@
+import type { Metadata } from "next";
+import { DonorForm } from "./_components/donor-form";
+
+export const metadata: Metadata = {
+  title: "Seja um benfeitor — Arca N. S. da Providência",
+  description:
+    "Apoie as bolsas de estudo da Arca Nossa Senhora da Providência. A cada 15 benfeitores, um aluno tem acesso a uma formação integralmente católica.",
+};
+
+export default function BenfeitorPage() {
+  return (
+    <div className="min-h-screen bg-bg">
+      <div className="mx-auto max-w-[720px] px-4 py-8 pb-16 max-sm:px-3 max-sm:py-5">
+        <header className="mb-8 text-center">
+          <svg
+            width="64"
+            height="64"
+            viewBox="0 0 220 220"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="mx-auto mb-3"
+            role="img"
+            aria-label="Logo Arca N. S. da Providência"
+          >
+            <defs>
+              <clipPath id="benf-clip">
+                <circle cx="110" cy="110" r="84" />
+              </clipPath>
+              <radialGradient id="benf-bg" cx="50%" cy="45%" r="55%">
+                <stop offset="0%" stopColor="#1e2a4a" />
+                <stop offset="100%" stopColor="#0f1729" />
+              </radialGradient>
+            </defs>
+            <circle cx="110" cy="110" r="106" fill="url(#benf-bg)" stroke="#c9a84c" strokeWidth="3" />
+            <circle cx="110" cy="110" r="98" fill="none" stroke="#c9a84c" strokeWidth="0.6" opacity="0.35" />
+            <image
+              href="/base1.png"
+              x="22"
+              y="30"
+              width="176"
+              height="184"
+              clipPath="url(#benf-clip)"
+              preserveAspectRatio="xMidYMid slice"
+            />
+            <circle cx="110" cy="110" r="84" fill="none" stroke="#0f1729" strokeWidth="12" opacity="0.2" />
+          </svg>
+          <p className="mb-1.5 text-xs font-medium uppercase tracking-widest text-muted">
+            Arca N. S. da Providência
+          </p>
+          <h1 className="font-display text-[28px] font-semibold leading-tight tracking-tight text-fg max-sm:text-[22px]">
+            Seja um benfeitor
+          </h1>
+        </header>
+
+        <section className="mb-8 rounded-xl border border-border bg-surface p-6 max-sm:p-5">
+          <figure className="rounded-r-md border-l-[3px] border-gold bg-bg px-5 py-3.5">
+            <blockquote className="font-display text-[17px] italic leading-snug text-accent text-pretty">
+              “Ajudar a escola católica não é um ato de simples beneficência; é um ato de fé e de justiça.”
+            </blockquote>
+            <figcaption className="mt-2.5 text-[11px] font-semibold uppercase tracking-widest text-gold">
+              Papa Pio XII · Discurso às Associações de Pais de Alunos de Escolas Católicas, 1954
+            </figcaption>
+          </figure>
+
+          <div className="mt-5 space-y-4 text-[15px] leading-relaxed text-muted-foreground text-pretty">
+            <p>
+              A cada <strong className="text-fg">15 pessoas</strong> que doam apenas{" "}
+              <strong className="text-fg">R$ 80,00 por mês</strong>, um aluno tem acesso a uma formação
+              integralmente católica.
+            </p>
+            <p>
+              Informamos que, todos os meses, uma <strong className="text-fg">missa é rezada</strong> por
+              todos os nossos benfeitores.
+            </p>
+            <p>
+              Estimado benfeitor, toda ajuda é bem-vinda. Mas, devido ao nosso compromisso em garantir a
+              bolsa do ano escolar completo, preferimos que sua doação seja regular.
+            </p>
+          </div>
+        </section>
+
+        <DonorForm />
+      </div>
+    </div>
+  );
+}

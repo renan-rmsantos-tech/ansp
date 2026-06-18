@@ -8,6 +8,7 @@ import {
   getApplicationDetail,
   exportDecision,
   exportContract,
+  exportApplication,
 } from "../_actions/admin-actions";
 
 export interface ApplicationSummary {
@@ -49,6 +50,8 @@ export function ApplicationCard({ application, onDecision }: ApplicationCardProp
   const [exportError, setExportError] = useState<string | null>(null);
   const [generatingContract, setGeneratingContract] = useState(false);
   const [contractError, setContractError] = useState<string | null>(null);
+  const [exportingData, setExportingData] = useState(false);
+  const [dataError, setDataError] = useState<string | null>(null);
   const [preview, setPreview] = useState<
     { pdfBase64: string; filename: string; title: string } | null
   >(null);
@@ -100,10 +103,26 @@ export function ApplicationCard({ application, onDecision }: ApplicationCardProp
     setGeneratingContract(false);
   }, [application.id]);
 
+  const handleExportData = useCallback(async () => {
+    setExportingData(true);
+    setDataError(null);
+    const result = await exportApplication(application.id);
+    if ("pdfBase64" in result) {
+      setPreview({
+        pdfBase64: result.pdfBase64,
+        filename: result.filename,
+        title: "Dados da Solicitação",
+      });
+    } else {
+      setDataError(result.error);
+    }
+    setExportingData(false);
+  }, [application.id]);
+
   const decided = application.status !== "pendente";
   const approved = application.status === "aprovada";
 
-  const headerActions = decided ? (
+  const headerActions = (
     <div
       className="flex shrink-0 flex-wrap items-center justify-end gap-2"
       data-testid="card-header-actions"
@@ -112,14 +131,28 @@ export function ApplicationCard({ application, onDecision }: ApplicationCardProp
         type="button"
         onClick={(e) => {
           e.stopPropagation();
-          void handleExport();
+          void handleExportData();
         }}
-        disabled={exporting}
-        className="rounded-md border border-accent bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent/90 disabled:opacity-50"
-        data-testid="export-button"
+        disabled={exportingData}
+        className="rounded-md border border-accent px-3 py-1.5 text-sm font-medium text-accent hover:bg-bg disabled:opacity-50"
+        data-testid="export-data-button"
       >
-        {exporting ? "Exportando..." : "Exportar Decisão"}
+        {exportingData ? "Gerando..." : "Exportar Dados (PDF)"}
       </button>
+      {decided && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            void handleExport();
+          }}
+          disabled={exporting}
+          className="rounded-md border border-accent bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent/90 disabled:opacity-50"
+          data-testid="export-button"
+        >
+          {exporting ? "Exportando..." : "Exportar Decisão"}
+        </button>
+      )}
       {approved && (
         <button
           type="button"
@@ -135,7 +168,7 @@ export function ApplicationCard({ application, onDecision }: ApplicationCardProp
         </button>
       )}
     </div>
-  ) : null;
+  );
 
   const decisionPanel = decided ? (
     <div data-testid="decision-info">
@@ -241,8 +274,13 @@ export function ApplicationCard({ application, onDecision }: ApplicationCardProp
           </button>
         </div>
 
-        {decided && (exportError || contractError) && (
+        {(exportError || contractError || dataError) && (
           <div className="mt-2 flex flex-col gap-1">
+            {dataError && (
+              <p className="text-sm text-danger" data-testid="export-data-error">
+                {dataError}
+              </p>
+            )}
             {exportError && (
               <p className="text-sm text-danger" data-testid="export-error">
                 {exportError}

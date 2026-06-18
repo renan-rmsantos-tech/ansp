@@ -188,6 +188,7 @@ html:has(.ansp-landing) { scroll-behavior: smooth; }
 /* ── Missão (Quem somos) ── */
 .ansp-landing .missao { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .ansp-landing .missao .grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 64px; align-items: start; }
+.ansp-landing .missao .grid-single { grid-template-columns: 1fr; max-width: 760px; margin: 0 auto; }
 .ansp-landing .missao .lede { font: 400 19px/1.65 var(--font-body); color: var(--fg); margin-bottom: 20px; text-wrap: pretty; }
 .ansp-landing .missao p { color: var(--muted); margin-bottom: 16px; max-width: 60ch; }
 .ansp-landing .missao p:last-child { margin-bottom: 0; }
@@ -200,14 +201,6 @@ html:has(.ansp-landing) { scroll-behavior: smooth; }
 .ansp-landing .missao .pull blockquote { font: italic 400 19px/1.55 var(--font-display); color: var(--accent); text-wrap: pretty; }
 .ansp-landing .missao .pull cite { display: block; margin-top: 12px; font: 550 11px/1 var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; color: oklch(58% 0.10 80); font-style: normal; }
 .ansp-landing .missao .closing { margin-top: 24px; font: 600 19px/1.45 var(--font-display); color: var(--accent); text-wrap: balance; }
-.ansp-landing .pillar-card {
-  background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius-lg);
-  padding: 32px;
-}
-.ansp-landing .pillar-card .ic { width: 28px; height: 28px; color: oklch(58% 0.10 80); margin-bottom: 18px; }
-.ansp-landing .pillar-card .ic svg { width: 100%; height: 100%; }
-.ansp-landing .pillar-card h3 { font: 600 19px/1.3 var(--font-display); color: var(--accent); margin-bottom: 8px; }
-.ansp-landing .pillar-card p { font: 400 14.5px/1.6 var(--font-body); color: var(--muted); }
 /* Devotional card — painting paired with scripture (santinho) */
 .ansp-landing .devocional {
   margin: 28px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 26px; align-items: center;
@@ -223,24 +216,6 @@ html:has(.ansp-landing) { scroll-behavior: smooth; }
 .ansp-landing .devocional-text cite { display: block; margin-top: 10px; font: 550 11px/1 var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; color: oklch(58% 0.10 80); font-style: normal; }
 @media (max-width: 460px) { .ansp-landing .devocional { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 18px; } }
 @media (max-width: 880px) { .ansp-landing .missao .grid { grid-template-columns: 1fr; gap: 40px; } }
-
-/* ── Obras (O que fazemos) ── */
-.ansp-landing .obras { background: var(--bg); }
-.ansp-landing .obras-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
-.ansp-landing .obra {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
-  padding: 36px 34px; display: flex; gap: 22px; align-items: flex-start;
-  transition: border-color .15s, transform .15s;
-}
-.ansp-landing .obra:hover { border-color: color-mix(in oklch, var(--gold) 50%, var(--border)); transform: translateY(-2px); }
-.ansp-landing .obra .num {
-  flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%;
-  display: grid; place-items: center; background: var(--accent); color: var(--gold);
-  font: 600 16px/1 var(--font-display);
-}
-.ansp-landing .obra h3 { font: 600 20px/1.3 var(--font-display); color: var(--accent); margin-bottom: 8px; }
-.ansp-landing .obra p { font: 400 15px/1.6 var(--font-body); color: var(--muted); }
-@media (max-width: 760px) { .ansp-landing .obras-grid { grid-template-columns: 1fr; } }
 
 /* ── Solicitação (CTA band) ── */
 .ansp-landing .solicitar { background: var(--accent); color: #fff; position: relative; overflow: hidden; }
@@ -259,9 +234,20 @@ html:has(.ansp-landing) { scroll-behavior: smooth; }
 .ansp-landing .solicitar .step b { font: 550 13px/1 var(--font-mono); color: var(--gold); }
 @media (max-width: 880px) { .ansp-landing .solicitar .shell { grid-template-columns: 1fr; gap: 36px; padding: 64px 24px; } }
 
+/* ── Seja um benfeitor (CTA band) ── */
+.ansp-landing .benfeitor-band { background: var(--cream); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.ansp-landing .benfeitor-band .shell { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 56px; align-items: center; padding: 80px 24px; }
+.ansp-landing .benfeitor-band h2 { font: 600 clamp(26px, 4vw, 36px)/1.14 var(--font-display); letter-spacing: -0.015em; color: var(--accent); margin: 14px 0 16px; text-wrap: balance; }
+.ansp-landing .benfeitor-band p { font: 400 17px/1.65 var(--font-body); color: var(--muted); max-width: 54ch; }
+.ansp-landing .benfeitor-actions { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+.ansp-landing .benfeitor-actions .btn-gold { justify-content: center; font-size: 16px; padding: 16px 28px; }
+.ansp-landing .benfeitor-note { font: 400 13.5px/1.55 var(--font-body); color: var(--muted); max-width: 40ch; }
+@media (max-width: 880px) { .ansp-landing .benfeitor-band .shell { grid-template-columns: 1fr; gap: 32px; padding: 60px 24px; } }
+
 /* ── Contato ── */
 .ansp-landing .contato { background: var(--surface); border-top: 1px solid var(--border); }
 .ansp-landing .contato-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 8px; }
+.ansp-landing .contato-grid-single { grid-template-columns: 1fr; max-width: 420px; }
 .ansp-landing .ci { padding: 28px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg); }
 .ansp-landing .ci .ic { width: 22px; height: 22px; color: oklch(58% 0.10 80); margin-bottom: 14px; }
 .ansp-landing .ci .ic svg { width: 100%; height: 100%; }
@@ -410,8 +396,8 @@ export default function LandingPage() {
           </a>
           <nav className="nav-links" aria-label="Navegação principal">
             <a href="#missao">Quem somos</a>
-            <a href="#obras">O que fazemos</a>
             <a href="#solicitar">Solicitar bolsa</a>
+            <a href="/benfeitor">Seja um benfeitor</a>
             <a href="#contato">Contato</a>
           </nav>
           <a href="/form" className="nav-cta">
@@ -429,9 +415,9 @@ export default function LandingPage() {
               Educar para a Eternidade, sob o manto da <em>Providência</em>.
             </h1>
             <p>
-              A Arca Nossa Senhora da Providência mantém o Colégio São José e estende as mãos às famílias
-              católicas que desejam, para seus filhos, uma formação verdadeiramente cristã — abandonadas,
-              em tudo, à Santa Vontade de Deus.
+              A Arca Nossa Senhora da Providência estende as mãos às famílias católicas que desejam, para
+              seus filhos, uma formação verdadeiramente católica — abandonadas, em tudo, à Santa Vontade de
+              Deus.
             </p>
             <div className="hero-actions">
               <a href="/form" className="btn btn-gold">
@@ -459,7 +445,7 @@ export default function LandingPage() {
       {/* ══════════ MISSÃO — Quem somos ══════════ */}
       <section className="section missao" id="missao">
         <div className="shell">
-          <div className="grid">
+          <div className="grid grid-single">
             <div>
               <div className="section-head" style={{ marginBottom: 28 }}>
                 <span className="kicker on-light">Quem somos</span>
@@ -518,87 +504,13 @@ export default function LandingPage() {
                 </span>
                 <div className="devocional-text">
                   <blockquote>
-                    “Buscai primeiro o Reino de Deus e a sua justiça, e todas estas coisas vos serão
-                    acrescentadas.”
+                    “Buscai primeiro o Reino de Deus e a sua justiça, e todas estas coisas vos serão dadas
+                    por acréscimo.”
                   </blockquote>
                   <cite>Mt 6, 33</cite>
                 </div>
               </figure>
             </div>
-
-            <aside style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-              <div className="pillar-card">
-                <div className="ic" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 3l9 4.5-9 4.5-9-4.5L12 3z" />
-                    <path d="M3 12l9 4.5 9-4.5" />
-                    <path d="M3 16.5L12 21l9-4.5" />
-                  </svg>
-                </div>
-                <h3>Fé e doutrina</h3>
-                <p>A vida cristã no centro da formação: oração, sacramentos e catequese conforme o magistério perene da Igreja.</p>
-              </div>
-              <div className="pillar-card">
-                <div className="ic" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 19V8l8-4 8 4v11" />
-                    <path d="M9 19v-6h6v6" />
-                  </svg>
-                </div>
-                <h3>Estudo e virtude</h3>
-                <p>Excelência acadêmica unida à formação do caráter — disciplina, retidão e amor ao trabalho bem-feito.</p>
-              </div>
-              <div className="pillar-card">
-                <div className="ic" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 21s-7-4.35-9.5-8.5C1 9.5 3 6 6.5 6 9 6 12 9 12 9s3-3 5.5-3C21 6 23 9.5 21.5 12.5 19 16.65 12 21 12 21z" />
-                  </svg>
-                </div>
-                <h3>Caridade e providência</h3>
-                <p>Bolsas e auxílios para que nenhuma família fique privada de uma educação católica por motivos financeiros.</p>
-              </div>
-            </aside>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════ OBRAS — O que fazemos ══════════ */}
-      <section className="section obras" id="obras">
-        <div className="shell">
-          <div className="section-head">
-            <span className="kicker on-light">O que fazemos</span>
-            <hr className="gold-divider" />
-            <h2>Nossas obras</h2>
-          </div>
-          <div className="obras-grid">
-            <article className="obra reveal" style={{ "--i": 0 } as CSSProperties}>
-              <span className="num" aria-hidden="true">I</span>
-              <div>
-                <h3>Manutenção do Colégio São José</h3>
-                <p>Sustentamos a estrutura, o corpo docente e o funcionamento do colégio, preservando um ensino tradicional e livre dos erros do mundo, do berçário ao ensino médio.</p>
-              </div>
-            </article>
-            <article className="obra reveal" style={{ "--i": 1 } as CSSProperties}>
-              <span className="num" aria-hidden="true">II</span>
-              <div>
-                <h3>Programa de bolsas de estudo</h3>
-                <p>Viabilizamos bolsas às famílias que não medem esforços para cumprir o grave dever de dar aos filhos uma educação inteiramente cristã, segundo critérios avaliados pela diretoria.</p>
-              </div>
-            </article>
-            <article className="obra reveal" style={{ "--i": 2 } as CSSProperties}>
-              <span className="num" aria-hidden="true">III</span>
-              <div>
-                <h3>Formação cristã e catequese</h3>
-                <p>Cooperamos com a graça divina na formação do verdadeiro e perfeito cristão: catequese, retiros e vida sacramental sob o apostolado da FSSPX.</p>
-              </div>
-            </article>
-            <article className="obra reveal" style={{ "--i": 3 } as CSSProperties}>
-              <span className="num" aria-hidden="true">IV</span>
-              <div>
-                <h3>Obras de assistência</h3>
-                <p>Fruto do sacrifício e da confiança na Providência, amparamos as famílias em dificuldade, mobilizando benfeitores e voluntários em torno da caridade cristã.</p>
-              </div>
-            </article>
           </div>
         </div>
       </section>
@@ -636,6 +548,30 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ══════════ BENFEITOR — CTA ══════════ */}
+      <section className="benfeitor-band" id="benfeitor">
+        <div className="shell">
+          <div>
+            <span className="kicker on-light">Seja um benfeitor</span>
+            <h2>Sustente a formação católica de um aluno</h2>
+            <p>
+              A cada 15 pessoas que doam apenas R$ 80,00 por mês, um aluno tem acesso a uma formação
+              integralmente católica. Todos os meses, uma missa é rezada por todos os nossos benfeitores.
+            </p>
+          </div>
+          <div className="benfeitor-actions">
+            <a href="/benfeitor" className="btn btn-gold">
+              Quero ser benfeitor
+              {arrowIcon}
+            </a>
+            <p className="benfeitor-note">
+              Por nosso compromisso de garantir a bolsa do ano escolar completo, preferimos doações
+              regulares.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ══════════ CONTATO ══════════ */}
       <section className="section contato" id="contato">
         <div className="shell">
@@ -644,22 +580,8 @@ export default function LandingPage() {
             <hr className="gold-divider" />
             <h2>Onde nos encontrar</h2>
           </div>
-          <div className="contato-grid">
+          <div className="contato-grid contato-grid-single">
             <div className="ci reveal" style={{ "--i": 0 } as CSSProperties}>
-              <div className="ic" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z" />
-                  <circle cx="12" cy="10" r="2.5" />
-                </svg>
-              </div>
-              <div className="lbl">Endereço</div>
-              <div className="val">
-                Colégio São José
-                <br />—, — — Rua e número
-              </div>
-              <p className="placeholder-note">— a confirmar (endereço completo)</p>
-            </div>
-            <div className="ci reveal" style={{ "--i": 1 } as CSSProperties}>
               <div className="ic" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 5h16v14H4z" />
@@ -672,20 +594,6 @@ export default function LandingPage() {
                 <br />(—) ————-————
               </div>
               <p className="placeholder-note">— a confirmar (canais oficiais)</p>
-            </div>
-            <div className="ci reveal" style={{ "--i": 2 } as CSSProperties}>
-              <div className="ic" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M12 7v5l3 2" />
-                </svg>
-              </div>
-              <div className="lbl">Atendimento</div>
-              <div className="val">
-                Secretaria · segunda a sexta
-                <br />das 8h às 17h
-              </div>
-              <p className="placeholder-note">— a confirmar (horário)</p>
             </div>
           </div>
         </div>
@@ -703,8 +611,8 @@ export default function LandingPage() {
                 <div>
                   <div className="fb-name">Arca Nossa Senhora da Providência</div>
                   <p className="fb-desc">
-                    Associação mantenedora do Colégio São José, dedicada à educação católica segundo a
-                    tradição da Igreja.
+                    Associação de assistência educacional católica, dedicada à formação cristã das famílias
+                    segundo a tradição da Igreja.
                   </p>
                 </div>
               </div>
@@ -713,8 +621,8 @@ export default function LandingPage() {
               <h4>Navegação</h4>
               <ul>
                 <li><a href="#missao">Quem somos</a></li>
-                <li><a href="#obras">O que fazemos</a></li>
                 <li><a href="#solicitar">Solicitar bolsa</a></li>
+                <li><a href="/benfeitor">Seja um benfeitor</a></li>
                 <li><a href="#contato">Contato</a></li>
               </ul>
             </div>
@@ -722,6 +630,7 @@ export default function LandingPage() {
               <h4>Solicitações</h4>
               <ul>
                 <li><a href="/form">Formulário de bolsa</a></li>
+                <li><a href="/benfeitor">Seja um benfeitor</a></li>
                 <li><a href="/admin">Área administrativa</a></li>
               </ul>
             </div>
@@ -735,7 +644,7 @@ export default function LandingPage() {
             </div>
             <div className="fsspx-text">
               <div className="fsspx-name">Fraternidade Sacerdotal São Pio X</div>
-              <div className="fsspx-sub">Orientação espiritual da Arca e do Colégio São José.</div>
+              <div className="fsspx-sub">Orientação espiritual da Arca Nossa Senhora da Providência.</div>
             </div>
           </div>
 
