@@ -14,14 +14,14 @@ export const donorPledgeSchema = z
       .string()
       .min(1, "E-mail é obrigatório")
       .refine((v) => EMAIL_RE.test(v), { message: "E-mail inválido" }),
-    telefone: z.string().optional(),
+    telefone: z.string().min(1, "Telefone é obrigatório"),
     frequencia: z.enum(["unica", "mensal"]),
     duracao: z.enum(["um_ano", "indeterminado"]).optional(),
     valor: z.number().positive("Informe um valor maior que zero"),
     meio_pagamento: z.enum(["cartao", "boleto", "transferencia", "pix"]),
-    data_pagamento: z.string().optional(),
-    lembrete_canal: z.enum(["whatsapp", "email"]).optional(),
-    observacoes: z.string().optional(),
+    data_pagamento: z.string().min(1, "Informe a data do pagamento"),
+    lembrete_canal: z.enum(["whatsapp", "email"]),
+    observacoes: z.string().min(1, "Preencha as observações"),
   })
   .refine(
     (data) => data.frequencia !== "mensal" || Boolean(data.duracao),

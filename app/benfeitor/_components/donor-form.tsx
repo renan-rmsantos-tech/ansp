@@ -89,8 +89,12 @@ export function DonorForm() {
     if (!cpf.trim()) localErrors.cpf = "Informe seu CPF.";
     else if (!isValidCPF(cpf)) localErrors.cpf = "CPF inválido.";
     if (!email.trim()) localErrors.email = "Informe seu e-mail.";
+    if (!telefone.trim()) localErrors.telefone = "Informe seu telefone.";
     if (valor <= 0) localErrors.valor = "Informe um valor maior que zero.";
     if (!meio) localErrors.meio_pagamento = "Selecione um meio de pagamento.";
+    if (!dataPagamento) localErrors.data_pagamento = "Informe a data do pagamento.";
+    if (!canal) localErrors.lembrete_canal = "Selecione um canal de lembrete.";
+    if (!observacoes.trim()) localErrors.observacoes = "Preencha as observações.";
     if (frequencia === "mensal" && !duracao)
       localErrors.duracao = "Selecione a duração.";
 
@@ -106,14 +110,14 @@ export function DonorForm() {
       nome: nome.trim(),
       cpf: cpf.trim(),
       email: email.trim(),
-      telefone: telefone.trim() || undefined,
+      telefone: telefone.trim(),
       frequencia,
       duracao: frequencia === "mensal" ? duracao ?? undefined : undefined,
       valor,
       meio_pagamento: meio as Meio,
-      data_pagamento: dataPagamento || undefined,
-      lembrete_canal: canal ?? undefined,
-      observacoes: observacoes.trim() || undefined,
+      data_pagamento: dataPagamento,
+      lembrete_canal: canal as Canal,
+      observacoes: observacoes.trim(),
     };
 
     const result = await registerDonorPledge(payload);
@@ -276,6 +280,7 @@ export function DonorForm() {
             onChange={(e) => setDataPagamento(e.target.value)}
             className={`${inputClass} max-w-[220px]`}
           />
+          <ErrorText msg={errors.data_pagamento} />
         </div>
 
         {/* Lembrete */}
@@ -289,6 +294,7 @@ export function DonorForm() {
               E-mail
             </OptionButton>
           </div>
+          <ErrorText msg={errors.lembrete_canal} />
         </div>
 
         <hr className="border-border" />
@@ -338,7 +344,7 @@ export function DonorForm() {
           </div>
           <div className="sm:col-span-2">
             <label htmlFor="donor-tel" className="mb-2 block text-sm font-medium text-fg">
-              Telefone / WhatsApp <span className="text-muted">(opcional)</span>
+              Telefone / WhatsApp
             </label>
             <input
               id="donor-tel"
@@ -347,10 +353,11 @@ export function DonorForm() {
               onChange={(e) => setTelefone(e.target.value)}
               className={inputClass}
             />
+            <ErrorText msg={errors.telefone} />
           </div>
           <div className="sm:col-span-2">
             <label htmlFor="donor-obs" className="mb-2 block text-sm font-medium text-fg">
-              Observações <span className="text-muted">(opcional)</span>
+              Observações
             </label>
             <textarea
               id="donor-obs"
@@ -359,6 +366,7 @@ export function DonorForm() {
               onChange={(e) => setObservacoes(e.target.value)}
               className={inputClass}
             />
+            <ErrorText msg={errors.observacoes} />
           </div>
         </div>
 
@@ -376,6 +384,12 @@ export function DonorForm() {
         >
           {submitting ? "Enviando..." : "Quero ser benfeitor"}
         </button>
+
+        <div className="text-center">
+          <Link href="/" className="text-sm font-medium text-accent hover:underline">
+            Voltar à página principal
+          </Link>
+        </div>
       </div>
     </form>
   );
