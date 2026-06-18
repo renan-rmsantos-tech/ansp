@@ -1,0 +1,190 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import { deleteDonorPledge } from "../_actions/admin-actions";
+
+export interface DonorPledge {
+  id: string;
+  nome: string;
+  email: string;
+  telefone?: string | null;
+  frequencia: "unica" | "mensal";
+  duracao?: "um_ano" | "indeterminado" | null;
+  valor: number;
+  meio_pagamento: "cartao" | "boleto" | "transferencia" | "pix";
+  data_pagamento?: string | null;
+  lembrete_canal?: "whatsapp" | "email" | null;
+  observacoes?: string | null;
+  created_at: string;
+}
+
+export const FREQUENCIA_LABELS: Record<DonorPledge["frequencia"], string> = {
+  unica: "Única",
+  mensal: "Mensal",
+};
+
+const DURACAO_LABELS: Record<NonNullable<DonorPledge["duracao"]>, string> = {
+  um_ano: "Por um ano",
+  indeterminado: "Indeterminado",
+};
+
+const MEIO_LABELS: Record<DonorPledge["meio_pagamento"], string> = {
+  cartao: "Cartão de crédito",
+  boleto: "Boleto",
+  transferencia: "Transferência",
+  pix: "Pix",
+};
+
+const CANAL_LABELS: Record<NonNullable<DonorPledge["lembrete_canal"]>, string> = {
+  whatsapp: "WhatsApp",
+  email: "E-mail",
+};
+
+const FREQUENCIA_COLORS: Record<DonorPledge["frequencia"], string> = {
+  mensal: "bg-success/15 text-success",
+  unica: "bg-accent/15 text-accent",
+};
+
+const currency = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
+
+// Formata 'YYYY-MM-DD' como 'DD/MM/YYYY' sem depender de fuso horário.
+function formatDateBR(isoDate: string): string {
+  const [y, m, d] = isoDate.split("-");
+  return d && m && y ? `${d}/${m}/${y}` : isoDate;
+}
+
+interface DonorCardProps {
+  donor: DonorPledge;
+  onDelete: (id: string) => void;
+}
+
+export function DonorCard({ donor, onDelete }: DonorCardProps) {
+  const [confirming, setConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleDelete = useCallback(async () => {
+    setDeleting(true);
+    setError(null);
+    const result = await deleteDonorPledge(donor.id);
+    setDeleting(false);
+    if (result.success) {
+      onDelete(donor.id);
+    } else {
+      setError(result.error ?? "Erro ao excluir.");
+      setConfirming(false);
+    }
+  }, [donor.id, onDelete]);
+
+  return (
+    <div
+      className="rounded-lg border border-border bg-surface p-4"
+      data-testid={`donor-card-${donor.id}`}
+    >
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-base font-semibold text-fg">{donor.nome}</span>
+            <span
+              className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${FREQUENCIA_COLORS[donor.frequencia]}`}
+              data-testid="frequencia-badge"
+            >
+              {FREQUENCIA_LABELS[donor.frequencia]}
+              {donor.frequencia === "mensal" && donor.duracao
+                ? ` · ${DURACAO_LABELS[donor.duracao]}`
+                : ""}
+            </span>
+          </div>
+
+          <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
+            <a
+              href={`mailto:${donor.email}`}
+              className="hover:text-accent hover:underline"
+            >
+              {donor.email}
+            </a>
+            {donor.telefone && <span>{donor.telefone}</span>}
+            <span>
+              Cadastro: {new Date(donor.created_at).toLocaleDateString("pt-BR")}
+            </span>
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            <span>
+              <span className="text-muted">Valor: </span>
+              <span className="font-semibold text-fg">
+                {currency.format(donor.valor)}
+                {donor.frequencia === "mensal" ? "/mês" : ""}
+              </span>
+            </span>
+            <span>
+              <span className="text-muted">Meio: </span>
+              <span className="text-fg">{MEIO_LABELS[donor.meio_pagamento]}</span>
+            </span>
+            {donor.data_pagamento && (
+              <span>
+                <span className="text-muted">Pagamento: </span>
+                <span className="text-fg">{formatDateBR(donor.data_pagamento)}</span>
+              </span>
+            )}
+            {donor.lembrete_canal && (
+              <span>
+                <span className="text-muted">Lembrete: </span>
+                <span className="text-fg">{CANAL_LABELS[donor.lembrete_canal]}</span>
+              </span>
+            )}
+          </div>
+
+          {donor.observacoes && (
+            <p className="mt-2 text-sm text-muted">
+              <span className="font-medium text-fg">Observações: </span>
+              {donor.observacoes}
+            </p>
+          )}
+
+          {error && (
+            <p className="mt-2 text-sm text-danger" data-testid="donor-delete-error">
+              {error}
+            </p>
+          )}
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2">
+          {confirming ? (
+            <>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="rounded-md border border-danger bg-danger px-3 py-1.5 text-sm font-medium text-white hover:bg-danger/90 disabled:opacity-50"
+                data-testid="donor-delete-confirm"
+              >
+                {deleting ? "Excluindo..." : "Confirmar"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirming(false)}
+                disabled={deleting}
+                className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-muted hover:bg-bg disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirming(true)}
+              className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-danger hover:bg-bg"
+              data-testid="donor-delete-button"
+            >
+              Excluir
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

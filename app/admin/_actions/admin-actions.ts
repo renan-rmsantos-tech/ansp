@@ -114,6 +114,35 @@ export async function getApplicationDetail(id: string) {
   };
 }
 
+// --- Donor Pledges ---
+
+export async function getDonorPledges() {
+  const { supabase } = await requireAuth();
+
+  const { data, error } = await supabase
+    .from("donor_pledges")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return { data: null, error: "Erro ao buscar benfeitores." };
+  }
+
+  return { data, error: null };
+}
+
+export async function deleteDonorPledge(id: string): Promise<ActionResult> {
+  const { supabase } = await requireAuth();
+
+  const { error } = await supabase.from("donor_pledges").delete().eq("id", id);
+
+  if (error) {
+    return { success: false, error: "Erro ao excluir benfeitor." };
+  }
+
+  return { success: true };
+}
+
 // --- Document URL ---
 
 function resolveDocumentPaths(path: string, applicationId?: string): string[] {
