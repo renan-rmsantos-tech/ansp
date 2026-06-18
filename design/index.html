@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arca Nossa Senhora da Providência</title>
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root {
+  --bg:      oklch(97.5% 0.005 85);
+  --surface: oklch(100% 0 0);
+  --fg:      oklch(22% 0.06 250);
+  --muted:   oklch(48% 0.03 250);
+  --border:  oklch(90% 0.008 85);
+  --accent:  oklch(25% 0.06 250);
+  --navy-deep: oklch(20% 0.06 250);
+  --gold:    oklch(72% 0.10 80);
+  --cream:   oklch(92% 0.03 85);
+
+  --font-display: 'Iowan Old Style', 'Charter', 'Palatino', Georgia, serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --radius: 8px;
+  --radius-lg: 12px;
+  --maxw: 1120px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font: 16px/1.6 var(--font-body);
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; }
+
+.shell { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+.skip-link {
+  position: absolute; top: -100%; left: 16px; z-index: 200;
+  padding: 8px 16px; background: var(--accent); color: #fff;
+  font: 550 13px/1 var(--font-body); border-radius: 0 0 6px 6px; text-decoration: none;
+}
+.skip-link:focus { top: 0; }
+
+/* ── Eyebrow / kicker ── */
+.kicker {
+  font: 550 11px/1 var(--font-body);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.kicker.on-light { color: oklch(58% 0.10 80); }
+
+.gold-divider { width: 48px; height: 2px; background: var(--gold); border: none; }
+
+/* ══════════ NAV ══════════ */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: color-mix(in oklch, var(--accent) 96%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid color-mix(in oklch, var(--gold) 22%, transparent);
+}
+.nav .shell { display: flex; align-items: center; gap: 20px; height: 72px; transition: height .3s cubic-bezier(.34, 1.4, .64, 1); }
+.nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; margin-right: auto; }
+.nav-brand .seal {
+  width: 40px; height: 40px; flex-shrink: 0;
+  transition: width .3s cubic-bezier(.34, 1.4, .64, 1), height .3s cubic-bezier(.34, 1.4, .64, 1), filter .3s ease;
+}
+.nav-brand .nb-text { display: flex; flex-direction: column; line-height: 1.1; }
+.nav-brand .nb-name { font: 600 15px/1.15 var(--font-display); color: oklch(95% 0.02 85); transition: font-size .3s cubic-bezier(.34, 1.4, .64, 1); }
+.nav-brand .nb-sub { font: 500 10px/1.3 var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; color: oklch(74% 0.04 250); transition: font-size .3s cubic-bezier(.34, 1.4, .64, 1); }
+
+/* Hover/foco no bloco da marca expande o cabeçalho inteiro (layout real, sem sobrepor) */
+.nav:has(.nav-brand:hover) .shell,
+.nav:has(.nav-brand:focus-visible) .shell { height: 128px; }
+.nav:has(.nav-brand:hover) .seal,
+.nav:has(.nav-brand:focus-visible) .seal { width: 72px; height: 72px; filter: drop-shadow(0 8px 20px rgba(0, 0, 0, .45)); }
+.nav:has(.nav-brand:hover) .nb-name,
+.nav:has(.nav-brand:focus-visible) .nb-name { font-size: 27px; }
+.nav:has(.nav-brand:hover) .nb-sub,
+.nav:has(.nav-brand:focus-visible) .nb-sub { font-size: 17px; }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a {
+  font: 500 14px/1 var(--font-body); letter-spacing: 0.01em;
+  color: oklch(82% 0.03 250); text-decoration: none; padding: 6px 0;
+  border-bottom: 1.5px solid transparent; transition: color .15s, border-color .15s;
+}
+.nav-links a:hover { color: #fff; border-color: var(--gold); }
+.nav-cta {
+  font: 550 13px/1 var(--font-body); letter-spacing: 0.02em;
+  background: var(--gold); color: var(--navy-deep);
+  padding: 10px 18px; border-radius: 6px; text-decoration: none;
+  transition: filter .15s, transform .1s;
+}
+.nav-cta:hover { filter: brightness(1.06); }
+.nav-cta:active { transform: translateY(1px); }
+@media (max-width: 760px) {
+  .nav-links { display: none; }
+  .nav .shell { gap: 12px; height: 64px; }
+  .nav-brand { gap: 10px; }
+  .nav-brand .seal { width: 34px; height: 34px; }
+  .nav-brand .nb-name { font-size: 13px; }
+  .nav-brand .nb-sub { font-size: 9px; }
+  .nav-cta { padding: 9px 14px; font-size: 12px; white-space: nowrap; flex-shrink: 0; }
+  .nav:has(.nav-brand:hover) .shell,
+  .nav:has(.nav-brand:focus-visible) .shell { height: 64px; }
+  .nav:has(.nav-brand:hover) .seal,
+  .nav:has(.nav-brand:focus-visible) .seal { width: 34px; height: 34px; filter: none; }
+  .nav:has(.nav-brand:hover) .nb-name,
+  .nav:has(.nav-brand:focus-visible) .nb-name { font-size: 13px; }
+  .nav:has(.nav-brand:hover) .nb-sub,
+  .nav:has(.nav-brand:focus-visible) .nb-sub { font-size: 9px; }
+}
+
+/* ══════════ HERO ══════════ */
+.hero {
+  position: relative;
+  background:
+    radial-gradient(120% 80% at 50% -10%, oklch(28% 0.06 250) 0%, var(--accent) 45%, var(--navy-deep) 100%);
+  color: #fff; overflow: hidden;
+}
+.hero::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.hero .shell {
+  display: grid; grid-template-columns: 1fr auto; gap: 64px; align-items: center;
+  padding: 96px 24px 104px;
+}
+.hero-copy { max-width: 580px; }
+.hero h1 {
+  font: 600 clamp(40px, 6vw, 64px)/1.08 var(--font-display);
+  letter-spacing: -0.02em; margin: 20px 0 18px;
+  color: oklch(97% 0.02 85); text-wrap: balance;
+}
+.hero h1 em { font-style: italic; color: var(--gold); }
+.hero p {
+  font: 400 18px/1.6 var(--font-body); color: oklch(85% 0.025 250);
+  max-width: 52ch; margin-bottom: 36px; text-wrap: pretty;
+}
+.hero-actions { display: flex; flex-wrap: wrap; gap: 14px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 9px;
+  font: 550 15px/1 var(--font-body); letter-spacing: 0.01em;
+  padding: 15px 28px; border-radius: 7px; text-decoration: none; border: 1.5px solid transparent;
+  cursor: pointer; transition: filter .15s, transform .1s, background .15s, border-color .15s;
+}
+.btn:active { transform: translateY(1px); }
+.btn-gold { background: var(--gold); color: var(--navy-deep); }
+.btn-gold:hover { filter: brightness(1.06); }
+.btn-ghost { color: oklch(90% 0.02 85); border-color: oklch(60% 0.04 250); }
+.btn-ghost:hover { border-color: var(--gold); color: #fff; }
+.btn svg { width: 17px; height: 17px; }
+
+/* Hero seal — full ANSP mark on the navy gradient */
+.hero-seal { position: relative; display: grid; place-items: center; }
+.hero-seal::before {
+  content: ""; position: absolute; width: 116%; height: 116%; border-radius: 50%;
+  background: radial-gradient(closest-side, oklch(72% 0.10 80 / .18) 0%, transparent 72%);
+}
+.hero-seal .seal {
+  position: relative; width: 300px; height: 300px;
+  filter: drop-shadow(0 20px 44px rgba(0, 0, 0, .45));
+}
+
+@media (max-width: 880px) {
+  .hero .shell { grid-template-columns: 1fr; gap: 28px; padding: 64px 24px 84px; text-align: center; }
+  .hero-copy { max-width: none; }
+  .hero p { margin-left: auto; margin-right: auto; }
+  .hero-actions { justify-content: center; }
+  .hero-seal { order: -1; }
+  .hero-seal .seal { width: min(220px, 60vw); height: auto; aspect-ratio: 1; }
+}
+
+/* ══════════ SECTION SCAFFOLD ══════════ */
+section { scroll-margin-top: 84px; }
+.section { padding: 96px 0; }
+.section-head { max-width: 640px; margin-bottom: 48px; }
+.section-head .gold-divider { margin: 14px 0 22px; }
+.section-head h2 {
+  font: 600 clamp(28px, 4vw, 40px)/1.12 var(--font-display);
+  letter-spacing: -0.015em; color: var(--accent); text-wrap: balance;
+}
+.section-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+.section-head.center .gold-divider { margin-left: auto; margin-right: auto; }
+
+/* ── Missão (Quem somos) ── */
+.missao { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.missao .grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 64px; align-items: start; }
+.missao .lede { font: 400 19px/1.65 var(--font-body); color: var(--fg); margin-bottom: 20px; text-wrap: pretty; }
+.missao p { color: var(--muted); margin-bottom: 16px; max-width: 60ch; }
+.missao p:last-child { margin-bottom: 0; }
+.missao em { color: var(--accent); font-style: italic; }
+.pillar-card {
+  background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 32px;
+}
+.pillar-card .ic { width: 28px; height: 28px; color: oklch(58% 0.10 80); margin-bottom: 18px; }
+.pillar-card .ic svg { width: 100%; height: 100%; }
+.pillar-card h3 { font: 600 19px/1.3 var(--font-display); color: var(--accent); margin-bottom: 8px; }
+.pillar-card p { font: 400 14.5px/1.6 var(--font-body); color: var(--muted); }
+/* Devotional card — painting paired with scripture (santinho) */
+.devocional {
+  margin: 28px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 26px; align-items: center;
+  padding: 24px; background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius-lg);
+}
+.devocional-frame {
+  flex-shrink: 0; display: block; width: 116px; padding: 10px;
+  background: var(--surface); border: 1px solid color-mix(in oklch, var(--gold) 38%, var(--border));
+  border-radius: var(--radius);
+}
+.devocional-frame img { display: block; width: 100%; height: auto; }
+.devocional-text blockquote { font: italic 400 17px/1.55 var(--font-display); color: var(--accent); text-wrap: pretty; }
+.devocional-text cite { display: block; margin-top: 10px; font: 550 11px/1 var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; color: oklch(58% 0.10 80); font-style: normal; }
+@media (max-width: 460px) { .devocional { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 18px; } }
+@media (max-width: 880px) { .missao .grid { grid-template-columns: 1fr; gap: 40px; } }
+
+/* ── Obras (O que fazemos) ── */
+.obras { background: var(--bg); }
+.obras-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.obra {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 36px 34px; display: flex; gap: 22px; align-items: flex-start;
+  transition: border-color .15s, transform .15s;
+}
+.obra:hover { border-color: color-mix(in oklch, var(--gold) 50%, var(--border)); transform: translateY(-2px); }
+.obra .num {
+  flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--accent); color: var(--gold);
+  font: 600 16px/1 var(--font-display);
+}
+.obra h3 { font: 600 20px/1.3 var(--font-display); color: var(--accent); margin-bottom: 8px; }
+.obra p { font: 400 15px/1.6 var(--font-body); color: var(--muted); }
+@media (max-width: 760px) { .obras-grid { grid-template-columns: 1fr; } }
+
+/* ── Solicitação (CTA band) ── */
+.solicitar { background: var(--accent); color: #fff; position: relative; overflow: hidden; }
+.solicitar::before {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(80% 120% at 85% 20%, oklch(30% 0.06 250) 0%, transparent 55%);
+}
+.solicitar .shell { position: relative; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 56px; align-items: center; padding: 84px 24px; }
+.solicitar .kicker { color: var(--gold); }
+.solicitar h2 { font: 600 clamp(28px, 4vw, 38px)/1.14 var(--font-display); letter-spacing: -0.015em; color: oklch(97% 0.02 85); margin: 14px 0 18px; text-wrap: balance; }
+.solicitar p { font: 400 17px/1.65 var(--font-body); color: oklch(84% 0.025 250); max-width: 52ch; }
+.solicitar-actions { display: flex; flex-direction: column; gap: 16px; }
+.solicitar .btn-gold { justify-content: center; font-size: 16px; padding: 18px 28px; }
+.solicitar .steps { display: flex; flex-direction: column; gap: 10px; }
+.solicitar .step { display: flex; gap: 12px; align-items: baseline; font: 400 14px/1.5 var(--font-body); color: oklch(80% 0.03 250); }
+.solicitar .step b { font: 550 13px/1 var(--font-mono); color: var(--gold); }
+@media (max-width: 880px) { .solicitar .shell { grid-template-columns: 1fr; gap: 36px; padding: 64px 24px; } }
+
+/* ── Contato ── */
+.contato { background: var(--surface); border-top: 1px solid var(--border); }
+.contato-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 8px; }
+.ci { padding: 28px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg); }
+.ci .ic { width: 22px; height: 22px; color: oklch(58% 0.10 80); margin-bottom: 14px; }
+.ci .ic svg { width: 100%; height: 100%; }
+.ci .lbl { font: 550 11px/1 var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.ci .val { font: 400 15px/1.55 var(--font-body); color: var(--fg); }
+.ci .val a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--border); }
+.ci .val a:hover { border-color: var(--gold); }
+.placeholder-note { font: 400 12px/1.4 var(--font-mono); color: var(--muted); margin-top: 6px; }
+@media (max-width: 760px) { .contato-grid { grid-template-columns: 1fr; } }
+
+/* ══════════ FOOTER ══════════ */
+.footer { background: var(--navy-deep); color: oklch(80% 0.03 250); padding: 64px 0 40px; }
+.footer-top { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 48px; padding-bottom: 40px; border-bottom: 1px solid oklch(34% 0.04 250); }
+.footer-brand { display: flex; gap: 16px; align-items: flex-start; }
+.footer-brand .seal { width: 56px; height: 56px; flex-shrink: 0; }
+.footer-brand .fb-name { font: 600 18px/1.2 var(--font-display); color: oklch(95% 0.02 85); margin-bottom: 6px; }
+.footer-brand .fb-desc { font: 400 13.5px/1.6 var(--font-body); color: oklch(72% 0.03 250); max-width: 38ch; }
+.footer-col h4 { font: 550 11px/1 var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+.footer-col a { font: 400 14px/1.4 var(--font-body); color: oklch(80% 0.03 250); text-decoration: none; }
+.footer-col a:hover { color: #fff; }
+
+/* FSSPX block */
+.fsspx {
+  display: flex; align-items: center; gap: 16px;
+  padding-top: 32px;
+}
+.fsspx-logo {
+  width: 72px; height: 72px; flex-shrink: 0;
+  display: grid; place-items: center;
+}
+.fsspx-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.fsspx-text .fsspx-name { font: 600 14px/1.3 var(--font-display); color: oklch(92% 0.02 85); }
+.fsspx-text .fsspx-sub { font: 400 12px/1.5 var(--font-body); color: oklch(70% 0.03 250); max-width: 44ch; margin-top: 3px; }
+
+.footer-bottom { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 28px; }
+.footer-bottom p { font: 400 12.5px/1.5 var(--font-body); color: oklch(64% 0.03 250); }
+.footer-bottom .legal a { color: oklch(74% 0.03 250); text-decoration: none; }
+.footer-bottom .legal a:hover { color: var(--gold); }
+
+@media (max-width: 880px) { .footer-top { grid-template-columns: 1fr; gap: 36px; } }
+
+/* ══════════ MOTION ══════════ */
+/* Reveals enhance an already-visible default: only the .js class hides them first. */
+.js .reveal { opacity: 0; transform: translateY(18px); }
+.js .reveal.in {
+  opacity: 1; transform: none;
+  transition: opacity .7s cubic-bezier(.22, 1, .36, 1), transform .7s cubic-bezier(.22, 1, .36, 1);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* Hero load choreography */
+.js .hero-copy > * { opacity: 0; animation: heroIn .8s cubic-bezier(.22, 1, .36, 1) forwards; }
+.js .hero-copy > *:nth-child(1) { animation-delay: .06s; }
+.js .hero-copy > *:nth-child(2) { animation-delay: .15s; }
+.js .hero-copy > *:nth-child(3) { animation-delay: .24s; }
+.js .hero-copy > *:nth-child(4) { animation-delay: .33s; }
+.js .hero-seal { opacity: 0; animation: heroFig 1s cubic-bezier(.22, 1, .36, 1) .22s forwards; }
+@keyframes heroIn  { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes heroFig { from { opacity: 0; transform: translateY(24px) scale(.97); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .01ms !important; animation: none !important; }
+  .js .reveal, .js .hero-copy > *, .js .hero-seal { opacity: 1 !important; transform: none !important; }
+}
+</style>
+</head>
+<body>
+<a href="#missao" class="skip-link">Pular para o conteúdo</a>
+
+<!-- Reusable seal symbol -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <clipPath id="seal-clip" clipPathUnits="userSpaceOnUse"><circle cx="110" cy="110" r="84"/></clipPath>
+    <radialGradient id="seal-navy" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#1e2a4a"/><stop offset="100%" stop-color="#0f1729"/>
+    </radialGradient>
+    <g id="seal-art">
+      <circle cx="110" cy="110" r="106" fill="url(#seal-navy)" stroke="#c9a84c" stroke-width="3"/>
+      <circle cx="110" cy="110" r="98" fill="none" stroke="#c9a84c" stroke-width="0.6" opacity="0.35"/>
+      <image href="base1.png" x="22" y="30" width="176" height="184" clip-path="url(#seal-clip)" preserveAspectRatio="xMidYMid slice"/>
+      <circle cx="110" cy="110" r="84" fill="none" stroke="#0f1729" stroke-width="12" opacity="0.2"/>
+      <path id="seal-arc-top" d="M 18,110 a 92,92 0 0,1 184,0" fill="none"/>
+      <text fill="#c9a84c" font-family="'Iowan Old Style','Charter','Palatino',Georgia,serif" font-size="12.5" font-weight="700" letter-spacing="0.18em"><textPath href="#seal-arc-top" startOffset="50%" text-anchor="middle">ARCA</textPath></text>
+      <path id="seal-arc-bottom" d="M 20,118 a 90,90 0 0,0 180,0" fill="none"/>
+      <text fill="#c9a84c" font-family="'Iowan Old Style','Charter','Palatino',Georgia,serif" font-size="11" font-weight="700" letter-spacing="0.14em"><textPath href="#seal-arc-bottom" startOffset="50%" text-anchor="middle">N. S. DA PROVIDÊNCIA</textPath></text>
+    </g>
+  </defs>
+</svg>
+
+<!-- ══════════ NAV ══════════ -->
+<header class="nav" data-od-id="nav">
+  <div class="shell">
+    <a href="#topo" class="nav-brand" aria-label="Arca Nossa Senhora da Providência — início">
+      <svg class="seal" viewBox="0 0 220 220" role="img" aria-label="Selo da Arca"><use href="#seal-art"/></svg>
+      <span class="nb-text">
+        <span class="nb-name">Arca N. S. da Providência</span>
+        <span class="nb-sub">Mantenedora · FSSPX</span>
+      </span>
+    </a>
+    <nav class="nav-links" aria-label="Navegação principal">
+      <a href="#missao">Quem somos</a>
+      <a href="#obras">O que fazemos</a>
+      <a href="#solicitar">Solicitar bolsa</a>
+      <a href="#contato">Contato</a>
+    </nav>
+    <a href="formulario.html" class="nav-cta">Solicitar bolsa</a>
+  </div>
+</header>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero" id="topo" data-od-id="hero">
+  <div class="shell">
+    <div class="hero-copy">
+      <span class="kicker">Obra de assistência educacional católica</span>
+      <h1>Educar na fé, amparar pela <em>Providência</em>.</h1>
+      <p>A Arca Nossa Senhora da Providência mantém o Colégio São José e socorre famílias que desejam uma formação católica para seus filhos — confiando, em tudo, à Divina Providência.</p>
+      <div class="hero-actions">
+        <a href="formulario.html" class="btn btn-gold">
+          Faça sua solicitação de bolsa
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#missao" class="btn btn-ghost">Conheça a Arca</a>
+      </div>
+    </div>
+    <div class="hero-seal">
+      <svg class="seal" viewBox="0 0 220 220" role="img" aria-label="Selo da Arca Nossa Senhora da Providência"><use href="#seal-art"/></svg>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MISSÃO — Quem somos ══════════ -->
+<section class="section missao" id="missao" data-od-id="missao">
+  <div class="shell">
+    <div class="grid">
+      <div>
+        <div class="section-head" style="margin-bottom:28px">
+          <span class="kicker on-light">Quem somos</span>
+          <hr class="gold-divider">
+          <h2>Uma arca a serviço da família católica</h2>
+        </div>
+        <p class="lede">A Arca Nossa Senhora da Providência é a associação mantenedora do Colégio São José, dedicada à educação cristã de crianças e jovens segundo a tradição da Igreja.</p>
+        <p>Sob a orientação espiritual da <em>Fraternidade Sacerdotal São Pio X</em>, reunimos pais, benfeitores e educadores em torno de um mesmo propósito: oferecer um ensino sólido, enraizado na fé, na virtude e no amor à verdade.</p>
+        <p>Nosso nome traduz nossa confiança: como a arca que abriga e protege, queremos acolher cada família — e, diante das dificuldades, entregar-nos inteiramente à Providência de Deus, por intercessão de Nossa Senhora.</p>
+        <figure class="devocional reveal">
+          <span class="devocional-frame">
+            <img src="base2.png" alt="Nossa Senhora segurando o Menino Jesus — pintura clássica de devoção mariana.">
+          </span>
+          <div class="devocional-text">
+            <blockquote>“Buscai primeiro o Reino de Deus e a sua justiça, e todas estas coisas vos serão acrescentadas.”</blockquote>
+            <cite>Mt 6, 33</cite>
+          </div>
+        </figure>
+      </div>
+
+      <aside style="display:flex; flex-direction:column; gap:20px;">
+        <div class="pillar-card">
+          <div class="ic" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 4.5-9 4.5-9-4.5L12 3z"/><path d="M3 12l9 4.5 9-4.5"/><path d="M3 16.5L12 21l9-4.5"/></svg>
+          </div>
+          <h3>Fé e doutrina</h3>
+          <p>A vida cristã no centro da formação: oração, sacramentos e catequese conforme o magistério perene da Igreja.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="ic" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V8l8-4 8 4v11"/><path d="M9 19v-6h6v6"/></svg>
+          </div>
+          <h3>Estudo e virtude</h3>
+          <p>Excelência acadêmica unida à formação do caráter — disciplina, retidão e amor ao trabalho bem-feito.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="ic" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.35-9.5-8.5C1 9.5 3 6 6.5 6 9 6 12 9 12 9s3-3 5.5-3C21 6 23 9.5 21.5 12.5 19 16.65 12 21 12 21z"/></svg>
+          </div>
+          <h3>Caridade e providência</h3>
+          <p>Bolsas e auxílios para que nenhuma família fique privada de uma educação católica por motivos financeiros.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ OBRAS — O que fazemos ══════════ -->
+<section class="section obras" id="obras" data-od-id="obras">
+  <div class="shell">
+    <div class="section-head">
+      <span class="kicker on-light">O que fazemos</span>
+      <hr class="gold-divider">
+      <h2>Nossas obras</h2>
+    </div>
+    <div class="obras-grid">
+      <article class="obra reveal" style="--i:0">
+        <span class="num" aria-hidden="true">I</span>
+        <div>
+          <h3>Manutenção do Colégio São José</h3>
+          <p>Sustentamos a estrutura, o corpo docente e o funcionamento do colégio, garantindo um ambiente católico do berçário ao ensino médio.</p>
+        </div>
+      </article>
+      <article class="obra reveal" style="--i:1">
+        <span class="num" aria-hidden="true">II</span>
+        <div>
+          <h3>Programa de bolsas de estudo</h3>
+          <p>Concessão de bolsas parciais a famílias que comprovem necessidade, segundo critérios socioeconômicos avaliados pela diretoria.</p>
+        </div>
+      </article>
+      <article class="obra reveal" style="--i:2">
+        <span class="num" aria-hidden="true">III</span>
+        <div>
+          <h3>Formação cristã e catequese</h3>
+          <p>Acompanhamento espiritual de alunos e famílias, com catequese, retiros e a vida sacramental sob orientação da FSSPX.</p>
+        </div>
+      </article>
+      <article class="obra reveal" style="--i:3">
+        <span class="num" aria-hidden="true">IV</span>
+        <div>
+          <h3>Obras de assistência</h3>
+          <p>Apoio material e humano às famílias em dificuldade, mobilizando benfeitores e voluntários em torno da caridade cristã.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SOLICITAR — CTA ══════════ -->
+<section class="solicitar" id="solicitar" data-od-id="solicitar">
+  <div class="shell">
+    <div>
+      <span class="kicker">Faça sua solicitação</span>
+      <h2>Peça sua bolsa de estudos</h2>
+      <p>Preencha o formulário de solicitação com os dados do responsável, dos alunos e a situação financeira da família. A comissão avaliadora analisa cada pedido com cuidado e responde dentro do prazo informado.</p>
+    </div>
+    <div class="solicitar-actions">
+      <a href="formulario.html" class="btn btn-gold">
+        Abrir formulário de solicitação
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <div class="steps">
+        <div class="step"><b>01</b> Preencha os dados da família e dos alunos</div>
+        <div class="step"><b>02</b> Anexe a documentação solicitada</div>
+        <div class="step"><b>03</b> Aguarde a análise da comissão avaliadora</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CONTATO ══════════ -->
+<section class="section contato" id="contato" data-od-id="contato">
+  <div class="shell">
+    <div class="section-head">
+      <span class="kicker on-light">Contato</span>
+      <hr class="gold-divider">
+      <h2>Onde nos encontrar</h2>
+    </div>
+    <div class="contato-grid">
+      <div class="ci reveal" style="--i:0">
+        <div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <div class="lbl">Endereço</div>
+        <div class="val">Colégio São José<br>—, — — Rua e número</div>
+        <p class="placeholder-note">— a confirmar (endereço completo)</p>
+      </div>
+      <div class="ci reveal" style="--i:1">
+        <div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M4 7l8 6 8-6"/></svg></div>
+        <div class="lbl">E-mail e telefone</div>
+        <div class="val"><a href="mailto:contato@arcaprovidencia.org">contato@arcaprovidencia.org</a><br>(—) ————-————</div>
+        <p class="placeholder-note">— a confirmar (canais oficiais)</p>
+      </div>
+      <div class="ci reveal" style="--i:2">
+        <div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="lbl">Atendimento</div>
+        <div class="val">Secretaria · segunda a sexta<br>das 8h às 17h</div>
+        <p class="placeholder-note">— a confirmar (horário)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="footer" data-od-id="footer">
+  <div class="shell">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">
+          <svg class="seal" viewBox="0 0 220 220" role="img" aria-label="Selo da Arca"><use href="#seal-art"/></svg>
+          <div>
+            <div class="fb-name">Arca Nossa Senhora da Providência</div>
+            <p class="fb-desc">Associação mantenedora do Colégio São José, dedicada à educação católica segundo a tradição da Igreja.</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="#missao">Quem somos</a></li>
+          <li><a href="#obras">O que fazemos</a></li>
+          <li><a href="#solicitar">Solicitar bolsa</a></li>
+          <li><a href="#contato">Contato</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Solicitações</h4>
+        <ul>
+          <li><a href="formulario.html">Formulário de bolsa</a></li>
+          <li><a href="login.html">Área administrativa</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FSSPX -->
+    <div class="fsspx">
+      <div class="fsspx-logo">
+        <img src="mqjmgzod-logo.png" alt="Fraternidade Sacerdotal São Pio X (FSSPX)">
+      </div>
+      <div class="fsspx-text">
+        <div class="fsspx-name">Fraternidade Sacerdotal São Pio X</div>
+        <div class="fsspx-sub">Orientação espiritual da Arca e do Colégio São José.</div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 Arca Nossa Senhora da Providência. Todos os direitos reservados.</p>
+      <p class="legal"><a href="#topo">Voltar ao topo ↑</a></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var reveals = [].slice.call(document.querySelectorAll('.reveal'));
+  function showAll() { reveals.forEach(function (el) { el.classList.add('in'); }); }
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !('IntersectionObserver' in window)) { showAll(); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
+  reveals.forEach(function (el) { io.observe(el); });
+  // Failsafe: a class-gated reveal must never leave content permanently hidden.
+  // If the observer never runs (background tab, headless capture, crawler), show everything.
+  window.addEventListener('load', function () { setTimeout(showAll, 1500); });
+})();
+</script>
+
+</body>
+</html>

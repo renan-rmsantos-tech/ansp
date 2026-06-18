@@ -1,18 +1,18 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 
-vi.mock("@/app/(form)/_actions/form-actions", () => ({
+vi.mock("@/app/form/_actions/form-actions", () => ({
   getActiveSchoolYear: vi.fn(),
   createSignedUploadUrl: vi.fn(),
   submitApplication: vi.fn(),
 }));
 
-vi.mock("@/app/(form)/_components/scholarship-form", () => ({
+vi.mock("@/app/form/_components/scholarship-form", () => ({
   ScholarshipForm: () => <div data-testid="scholarship-form">Form</div>,
 }));
 
-import { getActiveSchoolYear } from "@/app/(form)/_actions/form-actions";
-import FormPage from "@/app/(form)/page";
+import { getActiveSchoolYear } from "@/app/form/_actions/form-actions";
+import FormPage from "@/app/form/page";
 
 const mockGetActiveSchoolYear = vi.mocked(getActiveSchoolYear);
 

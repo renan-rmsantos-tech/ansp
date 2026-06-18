@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
-import { FileUpload } from "@/app/(form)/_components/file-upload";
+import { FileUpload } from "@/app/form/_components/file-upload";
 
 const mockCreateSignedUploadUrl = vi.fn();
 
-vi.mock("@/app/(form)/_actions/form-actions", () => ({
+vi.mock("@/app/form/_actions/form-actions", () => ({
   createSignedUploadUrl: (...args: unknown[]) => mockCreateSignedUploadUrl(...args),
 }));
 

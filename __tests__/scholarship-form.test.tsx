@@ -7,12 +7,12 @@ import {
   cleanup,
   act,
 } from "@testing-library/react";
-import { ScholarshipForm } from "@/app/(form)/_components/scholarship-form";
-import { SERIES_OPTIONS } from "@/app/(form)/_components/form-types";
+import { ScholarshipForm } from "@/app/form/_components/scholarship-form";
+import { SERIES_OPTIONS } from "@/app/form/_components/form-types";
 
 const mockSubmitApplication = vi.fn();
 
-vi.mock("@/app/(form)/_actions/form-actions", () => ({
+vi.mock("@/app/form/_actions/form-actions", () => ({
   createSignedUploadUrl: vi.fn().mockResolvedValue({
     url: "https://example.com/upload",
     path: "pending/abc/doc/file.pdf",

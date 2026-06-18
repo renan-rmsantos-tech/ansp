@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
-import { ProgressBar } from "@/app/(form)/_components/progress-bar";
+import { ProgressBar } from "@/app/form/_components/progress-bar";
 
 describe("ProgressBar", () => {
   afterEach(() => {

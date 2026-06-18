@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-import { FileUpload } from "@/app/(form)/_components/file-upload";
+import { FileUpload } from "@/app/form/_components/file-upload";
 
-vi.mock("@/app/(form)/_actions/form-actions", () => ({
+vi.mock("@/app/form/_actions/form-actions", () => ({
   createSignedUploadUrl: vi.fn().mockResolvedValue({
     url: "https://example.com/upload",
     path: "pending/abc/rg_pai/file.pdf",

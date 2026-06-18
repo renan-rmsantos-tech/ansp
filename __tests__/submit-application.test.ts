@@ -19,7 +19,7 @@ vi.mock("crypto", async () => {
   return { ...actual, randomUUID: () => "test-uuid-1234" };
 });
 
-import { submitApplication } from "@/app/(form)/_actions/form-actions";
+import { submitApplication } from "@/app/form/_actions/form-actions";
 
 function validInput() {
   return {

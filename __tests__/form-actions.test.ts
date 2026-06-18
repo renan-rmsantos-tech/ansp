@@ -22,7 +22,7 @@ vi.mock("@/lib/supabase/server", () => ({
 import {
   getActiveSchoolYear,
   createSignedUploadUrl,
-} from "@/app/(form)/_actions/form-actions";
+} from "@/app/form/_actions/form-actions";
 
 beforeEach(() => {
   vi.clearAllMocks();
