@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { deleteDonorPledge } from "../_actions/admin-actions";
+import { deleteDonorPledge, exportDonorPledge } from "../_actions/admin-actions";
+import { PdfPreviewModal } from "./pdf-preview-modal";
 
 export interface DonorPledge {
   id: string;
   nome: string;
+  cpf: string;
   email: string;
   telefone?: string | null;
   frequencia: "unica" | "mensal";
@@ -65,6 +67,23 @@ export function DonorCard({ donor, onDelete }: DonorCardProps) {
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [preview, setPreview] = useState<
+    { pdfBase64: string; filename: string } | null
+  >(null);
+
+  const handleExport = useCallback(async () => {
+    setExporting(true);
+    setExportError(null);
+    const result = await exportDonorPledge(donor.id);
+    if ("pdfBase64" in result) {
+      setPreview({ pdfBase64: result.pdfBase64, filename: result.filename });
+    } else {
+      setExportError(result.error);
+    }
+    setExporting(false);
+  }, [donor.id]);
 
   const handleDelete = useCallback(async () => {
     setDeleting(true);
@@ -84,6 +103,14 @@ export function DonorCard({ donor, onDelete }: DonorCardProps) {
       className="rounded-lg border border-border bg-surface p-4"
       data-testid={`donor-card-${donor.id}`}
     >
+      {preview && (
+        <PdfPreviewModal
+          pdfBase64={preview.pdfBase64}
+          filename={preview.filename}
+          title="Cadastro de Benfeitor"
+          onClose={() => setPreview(null)}
+        />
+      )}
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -106,6 +133,7 @@ export function DonorCard({ donor, onDelete }: DonorCardProps) {
             >
               {donor.email}
             </a>
+            <span>CPF: {donor.cpf}</span>
             {donor.telefone && <span>{donor.telefone}</span>}
             <span>
               Cadastro: {new Date(donor.created_at).toLocaleDateString("pt-BR")}
@@ -150,9 +178,23 @@ export function DonorCard({ donor, onDelete }: DonorCardProps) {
               {error}
             </p>
           )}
+          {exportError && (
+            <p className="mt-2 text-sm text-danger" data-testid="donor-export-error">
+              {exportError}
+            </p>
+          )}
         </div>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={handleExport}
+            disabled={exporting}
+            className="rounded-md border border-accent px-3 py-1.5 text-sm font-medium text-accent hover:bg-bg disabled:opacity-50"
+            data-testid="donor-export-button"
+          >
+            {exporting ? "Gerando..." : "Visualizar e Imprimir"}
+          </button>
           {confirming ? (
             <>
               <button

@@ -1,10 +1,15 @@
 import { z } from "zod";
+import { isValidCPF } from "./cpf";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const donorPledgeSchema = z
   .object({
     nome: z.string().min(1, "Nome é obrigatório"),
+    cpf: z
+      .string()
+      .min(1, "CPF é obrigatório")
+      .refine((v) => isValidCPF(v), { message: "CPF inválido" }),
     email: z
       .string()
       .min(1, "E-mail é obrigatório")

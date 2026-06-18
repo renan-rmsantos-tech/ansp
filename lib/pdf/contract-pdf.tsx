@@ -7,6 +7,10 @@ import {
   renderToBuffer,
 } from "@react-pdf/renderer";
 import type { ContractClause } from "@/lib/templates/contract-tokens";
+import {
+  DocumentHeaderView,
+  type DocumentHeaderData,
+} from "./document-header";
 
 // Conteúdo já com os tokens substituídos pelos dados da solicitação.
 export interface ResolvedContract {
@@ -14,6 +18,7 @@ export interface ResolvedContract {
   cabecalho: string;
   clausulas: ContractClause[];
   rodape: string;
+  header?: DocumentHeaderData | null;
 }
 
 const styles = StyleSheet.create({
@@ -82,6 +87,7 @@ function ContractDocument({ contract }: { contract: ResolvedContract }) {
   return (
     <Document title={contract.titulo}>
       <Page size="A4" style={styles.page}>
+        {contract.header && <DocumentHeaderView header={contract.header} />}
         <Text style={styles.titulo}>{contract.titulo}</Text>
 
         <Paragraphs text={contract.cabecalho} justify />

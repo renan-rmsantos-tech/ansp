@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { registerDonorPledge } from "../_actions/donor-actions";
 import type { DonorPledge } from "@/lib/validations/donor-schema";
+import { isValidCPF } from "@/lib/validations/cpf";
 
 type Frequencia = "unica" | "mensal";
 type Duracao = "um_ano" | "indeterminado";
@@ -65,6 +66,7 @@ export function DonorForm() {
   const [dataPagamento, setDataPagamento] = useState("");
   const [canal, setCanal] = useState<Canal | null>(null);
   const [nome, setNome] = useState("");
+  const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
   const [observacoes, setObservacoes] = useState("");
@@ -84,6 +86,8 @@ export function DonorForm() {
   const handleSubmit = useCallback(async () => {
     const localErrors: Record<string, string> = {};
     if (!nome.trim()) localErrors.nome = "Informe seu nome.";
+    if (!cpf.trim()) localErrors.cpf = "Informe seu CPF.";
+    else if (!isValidCPF(cpf)) localErrors.cpf = "CPF inválido.";
     if (!email.trim()) localErrors.email = "Informe seu e-mail.";
     if (valor <= 0) localErrors.valor = "Informe um valor maior que zero.";
     if (!meio) localErrors.meio_pagamento = "Selecione um meio de pagamento.";
@@ -100,6 +104,7 @@ export function DonorForm() {
 
     const payload: DonorPledge = {
       nome: nome.trim(),
+      cpf: cpf.trim(),
       email: email.trim(),
       telefone: telefone.trim() || undefined,
       frequencia,
@@ -126,6 +131,7 @@ export function DonorForm() {
     setErrors(flat);
   }, [
     nome,
+    cpf,
     email,
     telefone,
     frequencia,
@@ -301,6 +307,21 @@ export function DonorForm() {
               className={inputClass}
             />
             <ErrorText msg={errors.nome} />
+          </div>
+          <div>
+            <label htmlFor="donor-cpf" className="mb-2 block text-sm font-medium text-fg">
+              CPF
+            </label>
+            <input
+              id="donor-cpf"
+              type="text"
+              inputMode="numeric"
+              value={cpf}
+              onChange={(e) => setCpf(e.target.value)}
+              placeholder="000.000.000-00"
+              className={inputClass}
+            />
+            <ErrorText msg={errors.cpf} />
           </div>
           <div>
             <label htmlFor="donor-email" className="mb-2 block text-sm font-medium text-fg">

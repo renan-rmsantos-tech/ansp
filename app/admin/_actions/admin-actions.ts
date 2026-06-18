@@ -143,6 +143,32 @@ export async function deleteDonorPledge(id: string): Promise<ActionResult> {
   return { success: true };
 }
 
+export async function exportDonorPledge(
+  id: string
+): Promise<{ pdfBase64: string; filename: string } | { error: string }> {
+  const { supabase } = await requireAuth();
+
+  const { data: donor, error } = await supabase
+    .from("donor_pledges")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error || !donor) {
+    return { error: "Benfeitor não encontrado." };
+  }
+
+  const { renderDonorPdf } = await import("@/lib/pdf/donor-pdf");
+  const pdf = await renderDonorPdf(donor);
+
+  const safeNome = donor.nome
+    .replace(/[^a-zA-Z0-9À-ú ]/g, "")
+    .replace(/\s+/g, "_");
+  const filename = `benfeitor_${safeNome}.pdf`;
+
+  return { pdfBase64: pdf.toString("base64"), filename };
+}
+
 // --- Document URL ---
 
 function resolveDocumentPaths(path: string, applicationId?: string): string[] {
@@ -423,11 +449,14 @@ export async function exportDecision(
     ano_letivo: app.school_years?.nome ?? "",
   };
 
+  const { data: header } = await getDocumentHeader();
+
   const resolved = {
     titulo: `Decisão - ${app.escola}`,
     cabecalho: replaceTokens(template.cabecalho, tokenData),
     corpo: replaceTokens(template.corpo, tokenData),
     rodape: replaceTokens(template.rodape, tokenData),
+    header,
   };
 
   const { renderDecisionPdf } = await import("@/lib/pdf/decision-pdf");
@@ -492,6 +521,76 @@ export async function exportApplication(
   const filename = `solicitacao_${safeNome}.pdf`;
 
   return { pdfBase64: pdf.toString("base64"), filename };
+}
+
+// --- Document Header (selo + texto compartilhado nos PDFs) ---
+
+export interface DocumentHeader {
+  id: string;
+  linha1: string;
+  linha2: string;
+  linha3: string;
+  mostrar_selo: boolean;
+}
+
+export async function getDocumentHeader() {
+  const { supabase } = await requireAuth();
+
+  const { data, error } = await supabase
+    .from("document_header")
+    .select("*")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    return { data: null, error: "Erro ao buscar cabeçalho dos documentos." };
+  }
+
+  return { data: data as DocumentHeader | null, error: null };
+}
+
+export async function saveDocumentHeader(input: {
+  linha1: string;
+  linha2: string;
+  linha3: string;
+  mostrar_selo: boolean;
+}): Promise<ActionResult> {
+  const { supabase } = await requireAuth();
+
+  const { data: existing } = await supabase
+    .from("document_header")
+    .select("id")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const payload = {
+    linha1: input.linha1,
+    linha2: input.linha2,
+    linha3: input.linha3,
+    mostrar_selo: input.mostrar_selo,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (existing) {
+    const { error } = await supabase
+      .from("document_header")
+      .update(payload)
+      .eq("id", existing.id);
+
+    if (error) {
+      return { success: false, error: "Erro ao atualizar cabeçalho." };
+    }
+  } else {
+    const { error } = await supabase.from("document_header").insert(payload);
+
+    if (error) {
+      return { success: false, error: "Erro ao criar cabeçalho." };
+    }
+  }
+
+  return { success: true };
 }
 
 // --- Contract Template ---
@@ -616,6 +715,8 @@ export async function exportContract(
     data_extenso: formatDataExtenso(new Date()),
   };
 
+  const { data: header } = await getDocumentHeader();
+
   const resolved = {
     titulo: replaceContractTokens(template.titulo, tokenData),
     cabecalho: replaceContractTokens(template.cabecalho, tokenData),
@@ -624,6 +725,7 @@ export async function exportContract(
       corpo: replaceContractTokens(c.corpo, tokenData),
     })),
     rodape: replaceContractTokens(template.rodape, tokenData),
+    header,
   };
 
   const { renderContractPdf } = await import("@/lib/pdf/contract-pdf");

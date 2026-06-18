@@ -5,6 +5,7 @@ import {
   donorPledgeSchema,
   type DonorPledge,
 } from "@/lib/validations/donor-schema";
+import { formatCPF } from "@/lib/validations/cpf";
 
 export async function registerDonorPledge(
   input: DonorPledge
@@ -27,6 +28,7 @@ export async function registerDonorPledge(
 
   const { error } = await supabase.from("donor_pledges").insert({
     nome: data.nome,
+    cpf: formatCPF(data.cpf),
     email: data.email,
     telefone: data.telefone || null,
     frequencia: data.frequencia,

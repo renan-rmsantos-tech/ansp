@@ -6,6 +6,10 @@ import {
   StyleSheet,
   renderToBuffer,
 } from "@react-pdf/renderer";
+import {
+  DocumentHeaderView,
+  type DocumentHeaderData,
+} from "./document-header";
 
 // Conteúdo da decisão já com os tokens substituídos pelos dados da solicitação.
 export interface ResolvedDecision {
@@ -13,6 +17,7 @@ export interface ResolvedDecision {
   cabecalho: string;
   corpo: string;
   rodape: string;
+  header?: DocumentHeaderData | null;
 }
 
 const styles = StyleSheet.create({
@@ -77,6 +82,7 @@ function DecisionDocument({ decision }: { decision: ResolvedDecision }) {
   return (
     <Document title={decision.titulo}>
       <Page size="A4" style={styles.page}>
+        {decision.header && <DocumentHeaderView header={decision.header} />}
         <View style={styles.cabecalho}>
           <Paragraphs text={decision.cabecalho} lineStyle={styles.cabecalhoLinha} />
         </View>
